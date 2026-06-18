@@ -12,8 +12,8 @@ EXCEL_URL = "https://netorg12022531-my.sharepoint.com/:x:/g/personal/digitador1_
 SHEET_NAME = "Sheet1"
 
 DATE_COLUMNS = [
+    "Hora de finalización",
     "Fecha de entrega",
-    "Fecha de aprobación",
     "Fecha de instalación",
     "Fecha de desinstalación",
 ]
@@ -132,6 +132,7 @@ def read_excel():
             "error": f"No pude leer el Excel desde SharePoint: {e}",
             "rows": [],
             "kpis": {},
+            "presupuestistas": [],
             "responsables": [],
             "urgentes": [],
             "recientes": [],
@@ -141,7 +142,7 @@ def read_excel():
 
     for col in DATE_COLUMNS:
         if col in df.columns:
-            df[col] = pd.to_datetime(df[col], errors="coerce").dt.strftime("%d/%m/%Y")
+            df[col] = pd.to_datetime(df[col], errors="coerce").dt.strftime("%d/%m/%Y %I:%M %p")
             df[col] = df[col].fillna("")
 
     if "% avance" in df.columns:
@@ -150,12 +151,15 @@ def read_excel():
     else:
         df["Avance_Num"] = 0
 
-    if "Fecha de entrega" in raw_df.columns:
+    if "Dias de Vencimiento" in raw_df.columns:
+        df["Dias_Vencimiento_Calc"] = pd.to_numeric(
+            raw_df.loc[df.index, "Dias de Vencimiento"],
+            errors="coerce"
+        )
+    elif "Fecha de entrega" in raw_df.columns:
         fecha_entrega = pd.to_datetime(raw_df.loc[df.index, "Fecha de entrega"], errors="coerce")
         hoy = pd.Timestamp(datetime.now().date())
         df["Dias_Vencimiento_Calc"] = (fecha_entrega - hoy).dt.days
-    elif "Dias de Vencimiento" in raw_df.columns:
-        df["Dias_Vencimiento_Calc"] = pd.to_numeric(raw_df.loc[df.index, "Dias de Vencimiento"], errors="coerce")
     else:
         df["Dias_Vencimiento_Calc"] = None
 
@@ -176,9 +180,12 @@ def read_excel():
 
         status = safe_text(row.get("Status", "")) or "Sin status"
         prioridad = get_priority(dias, status)
+        presupuestista = safe_text(row.get("Presupuestista", "")) or "Sin presupuestista"
 
         records.append({
             "index": int(index),
+
+            "hora_solicitud": safe_text(row.get("Hora de finalización", "")),
             "nombre": safe_text(row.get("Nombre", "")),
             "categoria": safe_text(row.get("Categoría (C)", "")),
             "op": safe_text(row.get("Número de OP", "")) or "Sin OP",
@@ -187,17 +194,17 @@ def read_excel():
             "entrega": safe_text(row.get("Fecha de entrega", "")),
             "cliente": safe_text(row.get("Cliente", "")),
             "marca": safe_text(row.get("Marca", "")),
-            "fecha_aprobacion": safe_text(row.get("Fecha de aprobación", "")),
             "entregar": safe_text(row.get("Entregar", "")),
-            "entregar_a": safe_text(row.get("Entregar a", "")),
             "lugar_instalacion": safe_text(row.get("Lugar de instalación", "")),
             "fecha_instalacion": safe_text(row.get("Fecha de instalación", "")),
             "fecha_desinstalacion": safe_text(row.get("Fecha de desinstalación", "")),
-            "responsable": safe_text(row.get("Presupuestista", "")) or "Sin responsable",
+            "presupuestista": presupuestista,
+            "responsable": presupuestista,
             "brief": safe_text(row.get("Brief", "")),
             "status": status,
             "avance": round(avance, 1),
             "dias": dias,
+            "dias_vencimiento": dias,
             "prioridad": prioridad,
             "sort_rank": prioridad["rank"],
         })
@@ -218,9 +225,9 @@ def read_excel():
     proximas = [r for r in pendientes if r["dias"] is not None and 1 <= r["dias"] <= 3]
     sin_fecha = [r for r in pendientes if r["dias"] is None]
 
-    responsables = [
+    carga_presupuestista = [
         {"nombre": nombre, "total": total}
-        for nombre, total in Counter(r["responsable"] for r in pendientes).most_common(10)
+        for nombre, total in Counter(r["presupuestista"] for r in pendientes).most_common(10)
     ]
 
     urgentes = [
@@ -236,7 +243,8 @@ def read_excel():
         "rows": records,
         "urgentes": urgentes,
         "recientes": recientes,
-        "responsables": responsables,
+        "presupuestistas": carga_presupuestista,
+        "responsables": carga_presupuestista,
         "kpis": {
             "recibidas": len(records),
             "pendientes": len(pendientes),
@@ -270,3 +278,4 @@ def add_no_cache_headers(response):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+    
