@@ -6,28 +6,452 @@
   <title>BTL Producción | Bandeja de Trabajo</title>
   <style>
     :root{
-      --bg:#06101e; --panel:#0d1b2e; --panel2:#10243d; --text:#f8fafc; --muted:#9fb3c8;
-      --blue:#38bdf8; --green:#22c55e; --yellow:#facc15; --red:#ef4444; --orange:#fb923c; --purple:#a78bfa;
-      --border:rgba(255,255,255,.11); --shadow:0 22px 60px rgba(0,0,0,.38);
+      --bg:#06101e;
+      --panel:#0d1b2e;
+      --panel2:#10243d;
+      --text:#f8fafc;
+      --muted:#9fb3c8;
+      --blue:#38bdf8;
+      --green:#22c55e;
+      --yellow:#facc15;
+      --red:#ef4444;
+      --orange:#fb923c;
+      --purple:#a78bfa;
+      --border:rgba(255,255,255,.12);
+      --shadow:0 22px 60px rgba(0,0,0,.38);
     }
+
     *{box-sizing:border-box}
-    body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top left,#143d65 0,#07111f 44%,#020617 100%);color:var(--text);overflow:auto}
-    .screen{min-height:100vh;padding:20px;display:flex;flex-direction:column;gap:16px}
-    .top{display:flex;justify-content:space-between;align-items:center;gap:18px}
-    .brand{display:flex;align-items:center;gap:15px}
-    .logo{width:58px;height:58px;border-radius:19px;background:linear-gradient(135deg,var(--blue),var(--purple));display:grid;place-items:center;font-weight:950;font-size:22px;box-shadow:0 0 35px rgba(56,189,248,.36)}
-    h1{margin:0;font-size:31px;letter-spacing:.4px;line-height:1.08}.subtitle{color:var(--muted);font-size:15px;margin-top:5px}.clock{text-align:right;color:var(--muted);font-size:14px}.clock b{display:block;color:#fff;font-size:19px;margin-top:4px}.mode{margin-top:8px;font-size:12px;color:#bae6fd;border:1px solid rgba(56,189,248,.25);padding:6px 10px;border-radius:999px;display:inline-block}
-    .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:13px}.card{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));border:1px solid var(--border);border-radius:21px;padding:15px 16px;box-shadow:0 16px 40px rgba(0,0,0,.25);min-height:105px}.card:after{content:"";position:absolute;right:-30px;top:-35px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.045)}
-    .card .label{color:var(--muted);font-size:13px}.card .value{font-size:35px;font-weight:950;margin:7px 0 3px}.card .note{font-size:12px;color:var(--muted)}.urgent-card{border-color:rgba(239,68,68,.45);box-shadow:0 0 0 1px rgba(239,68,68,.08),0 16px 45px rgba(239,68,68,.08)}.today-card{border-color:rgba(250,204,21,.38)}
-    .filters{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.filter{border:1px solid var(--border);background:rgba(255,255,255,.045);color:#dbeafe;border-radius:999px;padding:9px 13px;font-weight:800;font-size:12px;cursor:pointer}.filter.active{background:linear-gradient(90deg,rgba(56,189,248,.25),rgba(34,197,94,.18));border-color:rgba(56,189,248,.5);color:#fff}.hint{margin-left:auto;color:var(--muted);font-size:12px}
-    .grid{display:grid;grid-template-columns:1fr 385px;gap:15px;min-height:420px}.panel{background:rgba(13,27,46,.78);border:1px solid var(--border);border-radius:24px;overflow:hidden;box-shadow:var(--shadow);min-height:0}.panel-head{padding:15px 17px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}.panel-title{font-weight:900;font-size:19px}.pill{font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:7px 10px;white-space:nowrap}
-    .table-wrap{overflow:auto;max-height:390px} table{width:100%;border-collapse:collapse} th{position:sticky;top:0;background:#10243d;color:#cbd5e1;font-size:12px;text-align:left;padding:13px 12px;z-index:2;white-space:nowrap} td{padding:12px;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;color:#e5e7eb;vertical-align:middle} tr.row-urgent{background:linear-gradient(90deg,rgba(239,68,68,.13),transparent)}tr.row-today{background:linear-gradient(90deg,rgba(250,204,21,.10),transparent)}tr.row-soon{background:linear-gradient(90deg,rgba(251,146,60,.09),transparent)}tr.row-done{opacity:.72} tr:hover{background:rgba(255,255,255,.055)}
-    .priority{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:7px 10px;font-weight:950;font-size:12px;white-space:nowrap}.p-urgent{background:rgba(239,68,68,.18);color:#fecaca;border:1px solid rgba(239,68,68,.35)}.p-today{background:rgba(250,204,21,.18);color:#fef3c7;border:1px solid rgba(250,204,21,.35)}.p-soon{background:rgba(251,146,60,.16);color:#fed7aa;border:1px solid rgba(251,146,60,.32)}.p-normal{background:rgba(34,197,94,.13);color:#bbf7d0;border:1px solid rgba(34,197,94,.25)}.p-done{background:rgba(34,197,94,.18);color:#86efac;border:1px solid rgba(34,197,94,.35)}.p-none{background:rgba(148,163,184,.16);color:#e2e8f0;border:1px solid rgba(148,163,184,.28)}
-    .status{padding:6px 10px;border-radius:999px;font-weight:850;font-size:11px;display:inline-block;white-space:nowrap}.s-ok{background:rgba(34,197,94,.18);color:#86efac}.s-proc{background:rgba(56,189,248,.16);color:#bae6fd}.s-other{background:rgba(148,163,184,.16);color:#cbd5e1}
-    .bar{height:10px;background:rgba(255,255,255,.10);border-radius:999px;overflow:hidden;min-width:85px}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:999px}.progress{display:flex;align-items:center;gap:8px;font-weight:900}.days{font-weight:950}.d-red{color:#fca5a5}.d-yellow{color:#fde68a}.d-green{color:#86efac}.muted{color:var(--muted)}
-    .side{padding:15px;display:flex;flex-direction:column;gap:13px}.section-title{font-size:18px;font-weight:950;margin:2px 0 0}.small-list{display:flex;flex-direction:column;gap:9px;overflow:auto;min-height:0}.item{background:rgba(255,255,255,.048);border:1px solid var(--border);border-radius:16px;padding:11px 12px}.item.urgent{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.10)}.item.today{border-color:rgba(250,204,21,.32);background:rgba(250,204,21,.08)}.item-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:950}.item small{display:block;color:var(--muted);margin-top:4px;line-height:1.25}.load-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.load-row b{font-size:14px}.load-badge{background:rgba(56,189,248,.15);color:#bae6fd;border:1px solid rgba(56,189,248,.3);padding:5px 9px;border-radius:999px;font-weight:950}.empty{color:var(--muted);font-size:13px;padding:10px;border:1px dashed var(--border);border-radius:14px;text-align:center}.error{padding:18px;background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.5);border-radius:18px;color:#fecaca;margin:14px}
-    .detail-panel{margin-top:2px}.detail-wrap{overflow:auto;max-height:42vh}.detail-table{min-width:2100px}.detail-table th{font-size:11px}.detail-table td{font-size:12px;white-space:nowrap}.detail-table td.long{max-width:240px;white-space:normal;line-height:1.25}.detail-table .link{color:#7dd3fc;font-weight:800;text-decoration:none}.detail-subtitle{color:var(--muted);font-size:12px;margin-top:3px}.detail-count{font-size:12px;color:#bae6fd;border:1px solid rgba(56,189,248,.28);padding:7px 10px;border-radius:999px;white-space:nowrap}
-    @media(max-width:1200px){.kpis{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}.side{display:none}.hint{display:none}.table-wrap{max-height:70vh}}
+
+    body{
+      margin:0;
+      font-family:Segoe UI,Arial,sans-serif;
+      background:radial-gradient(circle at top left,#143d65 0,#07111f 44%,#020617 100%);
+      color:var(--text);
+      overflow:auto;
+    }
+
+    .screen{
+      min-height:100vh;
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    .top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:18px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:18px;
+    }
+
+    .logo{
+      width:68px;
+      height:68px;
+      border-radius:21px;
+      background:linear-gradient(135deg,var(--blue),var(--purple));
+      display:grid;
+      place-items:center;
+      font-weight:950;
+      font-size:26px;
+      box-shadow:0 0 35px rgba(56,189,248,.36);
+    }
+
+    h1{
+      margin:0;
+      font-size:38px;
+      letter-spacing:.4px;
+      line-height:1.08;
+    }
+
+    .subtitle{
+      color:var(--muted);
+      font-size:20px;
+      margin-top:7px;
+    }
+
+    .clock{
+      text-align:right;
+      color:var(--muted);
+      font-size:17px;
+      min-width:260px;
+    }
+
+    .clock b{
+      display:block;
+      color:#fff;
+      font-size:24px;
+      margin-top:5px;
+    }
+
+    .mode{
+      margin-top:9px;
+      font-size:15px;
+      color:#bae6fd;
+      border:1px solid rgba(56,189,248,.25);
+      padding:8px 13px;
+      border-radius:999px;
+      display:inline-block;
+    }
+
+    .filters{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .filter{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.045);
+      color:#dbeafe;
+      border-radius:999px;
+      padding:12px 22px;
+      font-weight:900;
+      font-size:20px;
+      cursor:pointer;
+    }
+
+    .filter.active{
+      background:linear-gradient(90deg,rgba(56,189,248,.25),rgba(34,197,94,.18));
+      border-color:rgba(56,189,248,.5);
+      color:#fff;
+    }
+
+    .hint{
+      margin-left:auto;
+      color:var(--muted);
+      font-size:16px;
+    }
+
+    .panel{
+      background:rgba(13,27,46,.82);
+      border:1px solid var(--border);
+      border-radius:26px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      min-height:0;
+    }
+
+    .main-panel{
+      flex:1;
+    }
+
+    .panel-head{
+      padding:20px 24px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .panel-title{
+      font-weight:950;
+      font-size:34px;
+    }
+
+    .pill{
+      font-size:18px;
+      color:#bae6fd;
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:10px 16px;
+      white-space:nowrap;
+    }
+
+    .table-wrap{
+      overflow:auto;
+      max-height:55vh;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:1520px;
+    }
+
+    th{
+      position:sticky;
+      top:0;
+      background:#10243d;
+      color:#dbeafe;
+      font-size:19px;
+      text-align:left;
+      padding:18px 17px;
+      z-index:2;
+      white-space:nowrap;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+
+    td{
+      padding:20px 17px;
+      border-bottom:1px solid rgba(255,255,255,.075);
+      font-size:21px;
+      color:#e5e7eb;
+      vertical-align:middle;
+      line-height:1.28;
+    }
+
+    tr{
+      cursor:pointer;
+    }
+
+    tr.row-urgent{
+      background:linear-gradient(90deg,rgba(239,68,68,.20),rgba(239,68,68,.07),transparent);
+      box-shadow:inset 5px 0 0 rgba(239,68,68,.85);
+    }
+
+    tr.row-today{
+      background:linear-gradient(90deg,rgba(250,204,21,.16),rgba(250,204,21,.06),transparent);
+      box-shadow:inset 5px 0 0 rgba(250,204,21,.75);
+    }
+
+    tr.row-soon{
+      background:linear-gradient(90deg,rgba(251,146,60,.14),rgba(251,146,60,.05),transparent);
+    }
+
+    tr.row-done{
+      opacity:.72;
+    }
+
+    tr:hover{
+      background:rgba(255,255,255,.075);
+    }
+
+    .fire-cell{
+      text-align:center;
+      font-size:34px;
+      width:70px;
+      min-width:70px;
+    }
+
+    .fire-big{
+      display:inline-grid;
+      place-items:center;
+      width:46px;
+      height:46px;
+      border-radius:16px;
+      background:rgba(239,68,68,.18);
+      border:1px solid rgba(239,68,68,.38);
+      box-shadow:0 0 24px rgba(239,68,68,.25);
+      animation:pulseFire 1.25s infinite alternate ease-in-out;
+    }
+
+    @keyframes pulseFire{
+      from{transform:scale(1);filter:brightness(1)}
+      to{transform:scale(1.12);filter:brightness(1.25)}
+    }
+
+    .priority{
+      display:inline-flex;
+      align-items:center;
+      gap:9px;
+      border-radius:999px;
+      padding:10px 15px;
+      font-weight:950;
+      font-size:18px;
+      white-space:nowrap;
+    }
+
+    .p-urgent{background:rgba(239,68,68,.20);color:#fecaca;border:1px solid rgba(239,68,68,.42)}
+    .p-today{background:rgba(250,204,21,.20);color:#fef3c7;border:1px solid rgba(250,204,21,.42)}
+    .p-soon{background:rgba(251,146,60,.18);color:#fed7aa;border:1px solid rgba(251,146,60,.36)}
+    .p-normal{background:rgba(34,197,94,.14);color:#bbf7d0;border:1px solid rgba(34,197,94,.28)}
+    .p-done{background:rgba(34,197,94,.20);color:#86efac;border:1px solid rgba(34,197,94,.42)}
+    .p-none{background:rgba(148,163,184,.16);color:#e2e8f0;border:1px solid rgba(148,163,184,.28)}
+
+    .status{
+      padding:10px 15px;
+      border-radius:999px;
+      font-weight:900;
+      font-size:17px;
+      display:inline-block;
+      white-space:nowrap;
+    }
+
+    .s-ok{background:rgba(34,197,94,.20);color:#86efac}
+    .s-proc{background:rgba(56,189,248,.17);color:#bae6fd}
+    .s-other{background:rgba(148,163,184,.16);color:#cbd5e1}
+
+    .bar{
+      height:14px;
+      background:rgba(255,255,255,.12);
+      border-radius:999px;
+      overflow:hidden;
+      min-width:125px;
+    }
+
+    .bar span{
+      display:block;
+      height:100%;
+      background:linear-gradient(90deg,var(--blue),var(--green));
+      border-radius:999px;
+    }
+
+    .progress{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-weight:950;
+      min-width:185px;
+    }
+
+    .days{
+      font-weight:950;
+      font-size:24px;
+    }
+
+    .d-red{color:#fca5a5}
+    .d-yellow{color:#fde68a}
+    .d-green{color:#86efac}
+    .muted{color:var(--muted)}
+
+    .link{
+      color:#7dd3fc;
+      font-weight:900;
+      text-decoration:none;
+      font-size:19px;
+    }
+
+    .long{
+      max-width:330px;
+      white-space:normal;
+    }
+
+    .bottom-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+    }
+
+    .bottom-panel{
+      min-height:190px;
+    }
+
+    .bottom-list{
+      padding:18px;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:12px;
+    }
+
+    .item{
+      background:rgba(255,255,255,.048);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:14px 16px;
+      min-height:92px;
+    }
+
+    .item.urgent{
+      border-color:rgba(239,68,68,.42);
+      background:rgba(239,68,68,.12);
+    }
+
+    .item.today{
+      border-color:rgba(250,204,21,.36);
+      background:rgba(250,204,21,.10);
+    }
+
+    .item-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      font-weight:950;
+      font-size:22px;
+    }
+
+    .item small{
+      display:block;
+      color:var(--muted);
+      margin-top:6px;
+      line-height:1.35;
+      font-size:17px;
+    }
+
+    .detail-box{
+      padding:20px;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+
+    .detail-card{
+      background:rgba(255,255,255,.048);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:15px 17px;
+      min-height:85px;
+    }
+
+    .detail-card.full{
+      grid-column:1 / -1;
+    }
+
+    .detail-label{
+      color:#93c5fd;
+      font-size:15px;
+      font-weight:800;
+      margin-bottom:7px;
+      text-transform:uppercase;
+      letter-spacing:.4px;
+    }
+
+    .detail-value{
+      color:#fff;
+      font-size:21px;
+      font-weight:800;
+      word-break:break-word;
+    }
+
+    .detail-value.small{
+      font-size:18px;
+      font-weight:600;
+      color:#dbeafe;
+    }
+
+    .empty{
+      color:var(--muted);
+      font-size:20px;
+      padding:22px;
+      border:1px dashed var(--border);
+      border-radius:18px;
+      text-align:center;
+      grid-column:1 / -1;
+    }
+
+    .error{
+      padding:20px;
+      background:rgba(239,68,68,.14);
+      border:1px solid rgba(239,68,68,.5);
+      border-radius:18px;
+      color:#fecaca;
+      margin:18px;
+      font-size:20px;
+    }
+
+    @media(max-width:1200px){
+      .screen{height:auto}
+      h1{font-size:30px}
+      .subtitle{font-size:16px}
+      .top{align-items:flex-start}
+      .filters{gap:8px}
+      .filter{font-size:14px;padding:9px 12px}
+      .hint{display:none}
+      th{font-size:15px}
+      td{font-size:16px}
+      .bottom-grid{grid-template-columns:1fr}
+      .detail-box{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
@@ -37,94 +461,80 @@
         <div class="logo">BTL</div>
         <div>
           <h1>BTL Producción | Bandeja de Trabajo</h1>
-          <div class="subtitle">Órdenes pendientes, prioridades y fechas de entrega para el equipo de producción</div>
+          <div class="subtitle">Órdenes de producción priorizadas para pantalla operativa</div>
         </div>
       </div>
       <div class="clock">
         <div>Última actualización</div>
         <b id="updated">Cargando...</b>
-        <span class="mode">Vista operativa · Auto-refresh 3s</span>
+        <span class="mode">Vista TV · Auto-refresh 5s</span>
       </div>
-    </div>
-
-    <div class="kpis">
-      <div class="card"><div class="label">📥 Recibidas</div><div class="value" id="k_recibidas">0</div><div class="note">Total de órdenes</div></div>
-      <div class="card"><div class="label">📌 Pendientes</div><div class="value" id="k_pendientes">0</div><div class="note">Por trabajar</div></div>
-      <div class="card today-card"><div class="label">⏰ Entregan hoy</div><div class="value" id="k_hoy">0</div><div class="note">Prioridad del día</div></div>
-      <div class="card urgent-card"><div class="label">🔴 Vencidas</div><div class="value" id="k_vencidas">0</div><div class="note">Atención inmediata</div></div>
-      <div class="card"><div class="label">🟡 Próximas</div><div class="value" id="k_proximas">0</div><div class="note">1 a 3 días</div></div>
-      <div class="card"><div class="label">✅ Terminadas</div><div class="value" id="k_terminadas">0</div><div class="note">Completadas</div></div>
     </div>
 
     <div class="filters">
       <button class="filter active" data-filter="todas">Todas</button>
       <button class="filter" data-filter="pendientes">Pendientes</button>
-      <button class="filter" data-filter="urgente">Urgentes</button>
-      <button class="filter" data-filter="hoy">Hoy</button>
-      <button class="filter" data-filter="proxima">Próximas</button>
       <button class="filter" data-filter="terminada">Terminadas</button>
-      <span class="hint">La tabla superior muestra la cola operativa; abajo está el detalle completo</span>
+      <button class="filter" data-filter="urgente">Urgentes</button>
+      <span class="hint">🔥 aparece en órdenes vencidas o que entregan hoy</span>
     </div>
 
-    <div class="grid">
-      <div class="panel">
-        <div class="panel-head">
-          <div class="panel-title">Cola de órdenes para producción</div>
-          <div class="pill" id="visibleCount">0 órdenes visibles</div>
-        </div>
-        <div id="errorBox"></div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Prioridad</th><th>OP</th><th>Cliente</th><th>Proyecto</th><th>Marca</th><th>Responsable</th><th>Entrega</th><th>Estado</th><th>Avance</th><th>Días</th><th>Brief</th>
-              </tr>
-            </thead>
-            <tbody id="tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="panel side">
-        <div class="section-title">🔥 Atención inmediata</div>
-        <div class="small-list" id="urgentList"></div>
-        <div class="section-title">👤 Carga por responsable</div>
-        <div class="small-list" id="loadList"></div>
-        <div class="section-title">🆕 Últimas recibidas</div>
-        <div class="small-list" id="recentList"></div>
-      </div>
-    </div>
-
-    <div class="panel detail-panel">
+    <div class="panel main-panel">
       <div class="panel-head">
-        <div>
-          <div class="panel-title">Detalle completo de órdenes</div>
-          <div class="detail-subtitle">Incluye todos los campos del formulario. Desplázate horizontalmente para ver todas las columnas.</div>
-        </div>
-        <div class="detail-count" id="detailCount">0 registros</div>
+        <div class="panel-title">Cola de órdenes para producción</div>
+        <div class="pill" id="visibleCount">0 órdenes visibles</div>
       </div>
-      <div class="detail-wrap">
-        <table class="detail-table">
+
+      <div id="errorBox"></div>
+
+      <div class="table-wrap">
+        <table>
           <thead>
             <tr>
-              <th>Número de OP</th>
-              <th>Proyecto</th>
-              <th>Fecha de entrega</th>
-              <th>Cliente</th>
+              <th>🔥</th>
+              <th>Hora Solicitud</th>
+              <th>Prioridad</th>
+              <th>OP</th>
               <th>Marca</th>
-              <th>Fecha de aprobación</th>
-              <th>Lugar de instalación</th>
-              <th>Fecha de instalación</th>
-              <th>Fecha de desinstalación</th>
               <th>Presupuestista</th>
+              <th>Líder Producción</th>
+              <th>Fecha Entrega</th>
+              <th>Estado</th>
+              <th>Avance</th>
+              <th>Días</th>
               <th>Brief</th>
-              <th>Status</th>
-              <th>% avance</th>
-              <th>Días de Vencimiento</th>
             </tr>
           </thead>
-          <tbody id="detailBody"></tbody>
+          <tbody id="tbody"></tbody>
         </table>
+      </div>
+    </div>
+
+    <div class="bottom-grid">
+      <div class="panel bottom-panel">
+        <div class="panel-head">
+          <div class="panel-title">🔥 Atención inmediata</div>
+          <div class="pill">Urgentes / Hoy</div>
+        </div>
+        <div class="bottom-list" id="urgentList"></div>
+      </div>
+
+      <div class="panel bottom-panel">
+        <div class="panel-head">
+          <div class="panel-title">🆕 Últimas recibidas</div>
+          <div class="pill">Más recientes</div>
+        </div>
+        <div class="bottom-list" id="recentList"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">📋 Detalle de orden seleccionada</div>
+        <div class="pill" id="detailTitle">Selecciona una OP</div>
+      </div>
+      <div id="detalleOrden" class="detail-box">
+        <div class="empty">Haz clic sobre una orden en la tabla para ver el detalle completo aquí</div>
       </div>
     </div>
   </div>
@@ -133,126 +543,276 @@
 let allRows = [];
 let currentFilter = 'todas';
 let isLoading = false;
+let selectedOp = null;
 
-const esc = v => String(v ?? '').replace(/[&<>'"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
-const isDone = s => ['terminado','finalizado','completado','cerrado'].some(w => String(s||'').toLowerCase().includes(w));
-const isProcess = s => ['proceso','produccion','producción','trabajando'].some(w => String(s||'').toLowerCase().includes(w));
+const esc = v => String(v ?? '').replace(/[&<>'"]/g, m => ({
+  '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'
+}[m]));
+
+const isDone = s => ['terminado','finalizado','completado','cerrado']
+  .some(w => String(s || '').toLowerCase().includes(w));
+
+const isProcess = s => ['proceso','produccion','producción','trabajando']
+  .some(w => String(s || '').toLowerCase().includes(w));
+
+const isMaxPriority = r => {
+  const key = r.prioridad?.key;
+  return key === 'vencida' || key === 'hoy';
+};
 
 const fmtStatus = s => {
   const cls = isDone(s) ? 's-ok' : isProcess(s) ? 's-proc' : 's-other';
   return `<span class="status ${cls}">${esc(s || 'Sin status')}</span>`;
 };
-const fmtPriority = r => `<span class="priority ${r.prioridad.class}">${r.prioridad.emoji} ${r.prioridad.label}</span>`;
-const fmtDays = d => {
-  if(d === null || d === undefined) return `<span class="days muted">-</span>`;
-  const cls = d < 0 ? 'd-red' : d <= 3 ? 'd-yellow' : 'd-green';
-  return `<span class="days ${cls}">${d}</span>`;
+
+const fmtPriority = r => {
+  if (!r.prioridad) return `<span class="priority p-none">⚪ Sin prioridad</span>`;
+  return `<span class="priority ${r.prioridad.class}">${r.prioridad.emoji} ${r.prioridad.label}</span>`;
 };
-const briefLink = href => href ? `<a class="link" style="color:#7dd3fc;font-weight:800" href="${esc(href)}" target="_blank">Ver</a>` : '<span class="muted">-</span>';
+
+const fmtDays = d => {
+  if (d === null || d === undefined || d === '') return `<span class="days muted">-</span>`;
+  const n = Number(d);
+  const cls = n < 0 ? 'd-red' : n <= 3 ? 'd-yellow' : 'd-green';
+  return `<span class="days ${cls}">${esc(d)}</span>`;
+};
+
+const briefLink = href => href
+  ? `<a class="link" href="${esc(href)}" target="_blank">Ver</a>`
+  : '<span class="muted">-</span>';
+
 const rowClass = r => {
-  const key = r.prioridad.key;
-  if(key === 'vencida') return 'row-urgent';
-  if(key === 'hoy') return 'row-today';
-  if(key === 'proxima') return 'row-soon';
-  if(key === 'terminada') return 'row-done';
+  const key = r.prioridad?.key;
+  if (key === 'vencida') return 'row-urgent';
+  if (key === 'hoy') return 'row-today';
+  if (key === 'proxima') return 'row-soon';
+  if (key === 'terminada') return 'row-done';
   return '';
 };
+
 const showRow = r => {
-  const key = r.prioridad.key;
-  if(currentFilter === 'todas') return true;
-  if(currentFilter === 'pendientes') return !isDone(r.status);
-  if(currentFilter === 'urgente') return key === 'vencida';
-  if(currentFilter === 'hoy') return key === 'hoy';
-  if(currentFilter === 'proxima') return key === 'proxima';
-  if(currentFilter === 'terminada') return key === 'terminada';
+  const key = r.prioridad?.key;
+  if (currentFilter === 'todas') return true;
+  if (currentFilter === 'pendientes') return !isDone(r.status);
+  if (currentFilter === 'terminada') return key === 'terminada';
+  if (currentFilter === 'urgente') return key === 'vencida' || key === 'hoy';
   return true;
 };
 
+function sortRows(rows){
+  return rows.sort((a,b) => {
+    const da = a.dias ?? 9999;
+    const db = b.dias ?? 9999;
+
+    const pa = da < 0 ? 0 : da === 0 ? 1 : da <= 3 ? 2 : 3;
+    const pb = db < 0 ? 0 : db === 0 ? 1 : db <= 3 ? 2 : 3;
+
+    if (pa !== pb) return pa - pb;
+    return da - db;
+  });
+}
+
 function renderTable(){
-  const rows = allRows.filter(showRow);
+  let rows = allRows.filter(showRow);
+  rows = sortRows(rows);
+
   visibleCount.textContent = `${rows.length} órdenes visibles`;
-  tbody.innerHTML = rows.map(r => `
-    <tr class="${rowClass(r)}">
-      <td>${fmtPriority(r)}<div class="muted" style="font-size:11px;margin-top:5px">${esc(r.prioridad.message)}</div></td>
-      <td><b>${esc(r.op)}</b></td>
-      <td>${esc(r.cliente)}</td>
-      <td>${esc(r.proyecto)}</td>
-      <td>${esc(r.marca)}</td>
-      <td>${esc(r.responsable)}</td>
-      <td><b>${esc(r.entrega || r.fecha_entrega || '-')}</b></td>
-      <td>${fmtStatus(r.status)}</td>
-      <td><div class="progress"><div class="bar"><span style="width:${Math.min(Number(r.avance)||0,100)}%"></span></div>${esc(r.avance)}%</div></td>
-      <td>${fmtDays(r.dias)}</td>
-      <td>${briefLink(r.brief)}</td>
-    </tr>`).join('') || `<tr><td colspan="11" class="muted" style="text-align:center;padding:28px">No hay órdenes para este filtro</td></tr>`;
-}
 
-function renderDetailTable(){
-  detailCount.textContent = `${allRows.length} registros`;
-  detailBody.innerHTML = allRows.map(r => `
-    <tr class="${rowClass(r)}">
+  tbody.innerHTML = rows.map((r, i) => `
+    <tr class="${rowClass(r)}" data-row-index="${i}">
+      <td class="fire-cell">${isMaxPriority(r) ? '<span class="fire-big">🔥</span>' : ''}</td>
+      <td><b>${esc(r.hora_solicitud || '-')}</b></td>
+      <td>${fmtPriority(r)}</td>
       <td><b>${esc(r.op || '-')}</b></td>
-      <td class="long">${esc(r.proyecto || '-')}</td>
-      <td>${esc(r.fecha_entrega || r.entrega || '-')}</td>
-      <td>${esc(r.cliente || '-')}</td>
       <td>${esc(r.marca || '-')}</td>
-      <td>${esc(r.fecha_aprobacion || '-')}</td>
-      <td class="long">${esc(r.lugar_instalacion || '-')}</td>
-      <td>${esc(r.fecha_instalacion || '-')}</td>
-      <td>${esc(r.fecha_desinstalacion || '-')}</td>
-      <td>${esc(r.responsable || '-')}</td>
-      <td>${briefLink(r.brief)}</td>
+      <td>${esc(r.presupuestista || r.responsable || '-')}</td>
+      <td>${esc(r.lider_produccion || '-')}</td>
+      <td><b>${esc(r.fecha_entrega || r.entrega || '-')}</b></td>
       <td>${fmtStatus(r.status)}</td>
-      <td><div class="progress"><div class="bar"><span style="width:${Math.min(Number(r.avance)||0,100)}%"></span></div>${esc(r.avance)}%</div></td>
+      <td>
+        <div class="progress">
+          <div class="bar">
+            <span style="width:${Math.min(Number(r.avance) || 0, 100)}%"></span>
+          </div>
+          ${esc(r.avance || 0)}%
+        </div>
+      </td>
       <td>${fmtDays(r.dias)}</td>
-    </tr>`).join('') || `<tr><td colspan="14" class="muted" style="text-align:center;padding:28px">Sin registros</td></tr>`;
+      <td>${briefLink(r.brief)}</td>
+    </tr>
+  `).join('') || `
+    <tr>
+      <td colspan="12" class="muted" style="text-align:center;padding:35px;font-size:24px">
+        No hay órdenes para este filtro
+      </td>
+    </tr>`;
+
+  document.querySelectorAll("#tbody tr[data-row-index]").forEach(tr => {
+    tr.onclick = () => {
+      const idx = Number(tr.dataset.rowIndex);
+      mostrarDetalle(rows[idx]);
+    };
+  });
 }
 
-function renderSide(data){
-  urgentList.innerHTML = data.urgentes.length ? data.urgentes.map(r => `
-    <div class="item ${r.prioridad.key === 'vencida' ? 'urgent' : r.prioridad.key === 'hoy' ? 'today' : ''}">
-      <div class="item-top"><span>OP ${esc(r.op)}</span>${fmtPriority(r)}</div>
-      <small>${esc(r.cliente)} · ${esc(r.proyecto)}<br>${esc(r.prioridad.message)} · Entrega: ${esc(r.entrega || r.fecha_entrega || '-')}</small>
-    </div>`).join('') : `<div class="empty">Sin órdenes urgentes por ahora</div>`;
+function mostrarDetalle(r){
+  selectedOp = r.op;
+  detailTitle.textContent = `OP ${r.op || '-'}`;
 
-  loadList.innerHTML = data.responsables.length ? data.responsables.map(x => `
-    <div class="item"><div class="load-row"><b>${esc(x.nombre)}</b><span class="load-badge">${x.total}</span></div></div>`).join('') : `<div class="empty">Sin pendientes asignadas</div>`;
+  detalleOrden.innerHTML = `
+    <div class="detail-card">
+      <div class="detail-label">OP</div>
+      <div class="detail-value">${esc(r.op || '-')}</div>
+    </div>
 
-  recentList.innerHTML = data.recientes.length ? data.recientes.map(r => `
-    <div class="item"><div class="item-top"><span>OP ${esc(r.op)}</span>${fmtDays(r.dias)}</div><small>${esc(r.cliente)} · ${esc(r.proyecto)}</small></div>`).join('') : `<div class="empty">Sin registros</div>`;
+    <div class="detail-card">
+      <div class="detail-label">Prioridad</div>
+      <div class="detail-value">${fmtPriority(r)}</div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-label">Estado</div>
+      <div class="detail-value">${fmtStatus(r.status)}</div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-label">Días</div>
+      <div class="detail-value">${fmtDays(r.dias)}</div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-label">Hora solicitud</div>
+      <div class="detail-value">${esc(r.hora_solicitud || '-')}</div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-label">Fecha entrega</div>
+      <div class="detail-value">${esc(r.fecha_entrega || r.entrega || '-')}</div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-label">Instalación</div>
+      <div class="detail-value">${esc(r.fecha_instalacion || '-')}</div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-label">Desinstalación</div>
+      <div class="detail-value">${esc(r.fecha_desinstalacion || '-')}</div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-label">Marca</div>
+      <div class="detail-value">${esc(r.marca || '-')}</div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-label">Presupuestista</div>
+      <div class="detail-value">${esc(r.presupuestista || r.responsable || '-')}</div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-label">Líder Producción</div>
+      <div class="detail-value">${esc(r.lider_produccion || '-')}</div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-label">Cliente</div>
+      <div class="detail-value">${esc(r.cliente || '-')}</div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-label">Proyecto</div>
+      <div class="detail-value">${esc(r.proyecto || '-')}</div>
+    </div>
+
+    <div class="detail-card full">
+      <div class="detail-label">Lugar de instalación</div>
+      <div class="detail-value small">${esc(r.lugar_instalacion || '-')}</div>
+    </div>
+
+    <div class="detail-card full">
+      <div class="detail-label">Brief</div>
+      <div class="detail-value small">${r.brief ? briefLink(r.brief) : '-'}</div>
+    </div>
+  `;
+}
+
+function renderBottom(data){
+  const urgentes = (data.urgentes || []).slice(0, 6);
+  urgentList.innerHTML = urgentes.length ? urgentes.map(r => `
+    <div class="item ${r.prioridad?.key === 'vencida' ? 'urgent' : 'today'}">
+      <div class="item-top">
+        <span>${r.prioridad?.key === 'vencida' ? '🔥' : '⏰'} OP ${esc(r.op || '-')}</span>
+        ${fmtDays(r.dias)}
+      </div>
+      <small>
+        ${esc(r.prioridad?.message || '')}<br>
+        ${esc(r.marca || '-')} · ${esc(r.presupuestista || r.responsable || '-')}<br>
+        Líder: ${esc(r.lider_produccion || '-')}<br>
+        Entrega: ${esc(r.fecha_entrega || r.entrega || '-')}
+      </small>
+    </div>
+  `).join('') : `<div class="empty">Sin órdenes urgentes por ahora</div>`;
+
+  const recientes = (data.recientes || []).slice(0, 6);
+  recentList.innerHTML = recientes.length ? recientes.map(r => `
+    <div class="item">
+      <div class="item-top">
+        <span>OP ${esc(r.op || '-')}</span>
+        ${fmtPriority(r)}
+      </div>
+      <small>
+        Solicitud: ${esc(r.hora_solicitud || '-')}<br>
+        Marca: ${esc(r.marca || '-')}<br>
+        Presupuestista: ${esc(r.presupuestista || r.responsable || '-')}<br>
+        Líder: ${esc(r.lider_produccion || '-')}
+      </small>
+    </div>
+  `).join('') : `<div class="empty">Sin registros recientes</div>`;
 }
 
 async function loadData(){
-  if(isLoading) return;
+  if (isLoading) return;
   isLoading = true;
+
   try{
     const res = await fetch('/api/ordenes?nocache=' + Date.now(), { cache: 'no-store' });
     const data = await res.json();
-    if(!data.ok){errorBox.innerHTML=`<div class="error">${esc(data.error)}</div>`;return;}
-    errorBox.innerHTML='';
-    updated.textContent = data.updated_at;
-    const k = data.kpis;
-    k_recibidas.textContent=k.recibidas; k_pendientes.textContent=k.pendientes; k_hoy.textContent=k.hoy; k_vencidas.textContent=k.vencidas; k_proximas.textContent=k.proximas; k_terminadas.textContent=k.terminadas;
+
+    if(!data.ok){
+      errorBox.innerHTML = `<div class="error">${esc(data.error || 'Error cargando datos')}</div>`;
+      return;
+    }
+
+    errorBox.innerHTML = '';
+    updated.textContent = data.updated_at || 'Actualizado';
+
     allRows = data.rows || [];
     renderTable();
-    renderDetailTable();
-    renderSide(data);
+    renderBottom(data);
+
+    if (selectedOp) {
+      const updatedSelected = allRows.find(r => String(r.op) === String(selectedOp));
+      if (updatedSelected) mostrarDetalle(updatedSelected);
+    }
   }catch(e){
-    errorBox.innerHTML=`<div class="error">Error cargando datos: ${esc(e)}</div>`;
+    errorBox.innerHTML = `<div class="error">Error cargando datos: ${esc(e)}</div>`;
   }finally{
     isLoading = false;
   }
 }
 
-document.querySelectorAll('.filter').forEach(btn => btn.addEventListener('click', () => {
-  document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  currentFilter = btn.dataset.filter;
-  renderTable();
-}));
+document.querySelectorAll('.filter').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderTable();
+  };
+});
 
 loadData();
-setInterval(loadData, 3000);
+setInterval(loadData, 5000);
 </script>
 </body>
 </html>

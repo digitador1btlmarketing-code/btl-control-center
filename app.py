@@ -12,7 +12,6 @@ EXCEL_URL = "https://netorg12022531-my.sharepoint.com/:x:/g/personal/digitador1_
 SHEET_NAME = "Sheet1"
 
 DATE_COLUMNS = [
-    "Hora de finalización",
     "Fecha de entrega",
     "Fecha de instalación",
     "Fecha de desinstalación",
@@ -139,10 +138,20 @@ def read_excel():
         }
 
     df = raw_df.dropna(how="all").copy()
+    
+    if "Número de OP" in df.columns:
+        df["_status_lleno"] = df.get("Status", "").fillna("").astype(str).str.strip().ne("")
+        df = (
+            df.sort_values("_status_lleno", ascending=True)
+              .drop_duplicates(subset=["Número de OP"], keep="last")
+              .drop(columns=["_status_lleno"])
+        )
+
+
 
     for col in DATE_COLUMNS:
         if col in df.columns:
-            df[col] = pd.to_datetime(df[col], errors="coerce").dt.strftime("%d/%m/%Y %I:%M %p")
+            df[col] = pd.to_datetime(df[col], errors="coerce").dt.strftime("%d/%m/%Y")
             df[col] = df[col].fillna("")
 
     if "% avance" in df.columns:
@@ -207,6 +216,7 @@ def read_excel():
             "dias_vencimiento": dias,
             "prioridad": prioridad,
             "sort_rank": prioridad["rank"],
+            "lider_produccion": safe_text(row.get("Líder Producción", "")),
         })
 
     records.sort(
@@ -278,4 +288,3 @@ def add_no_cache_headers(response):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
-    
