@@ -107,16 +107,12 @@
         <table class="detail-table">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Categoría (C)</th>
               <th>Número de OP</th>
               <th>Proyecto</th>
               <th>Fecha de entrega</th>
               <th>Cliente</th>
               <th>Marca</th>
               <th>Fecha de aprobación</th>
-              <th>Entregar</th>
-              <th>Entregar a</th>
               <th>Lugar de instalación</th>
               <th>Fecha de instalación</th>
               <th>Fecha de desinstalación</th>
@@ -195,16 +191,12 @@ function renderDetailTable(){
   detailCount.textContent = `${allRows.length} registros`;
   detailBody.innerHTML = allRows.map(r => `
     <tr class="${rowClass(r)}">
-      <td>${esc(r.nombre || '-')}</td>
-      <td>${esc(r.categoria || '-')}</td>
       <td><b>${esc(r.op || '-')}</b></td>
       <td class="long">${esc(r.proyecto || '-')}</td>
       <td>${esc(r.fecha_entrega || r.entrega || '-')}</td>
       <td>${esc(r.cliente || '-')}</td>
       <td>${esc(r.marca || '-')}</td>
       <td>${esc(r.fecha_aprobacion || '-')}</td>
-      <td>${esc(r.entregar || '-')}</td>
-      <td>${esc(r.entregar_a || '-')}</td>
       <td class="long">${esc(r.lugar_instalacion || '-')}</td>
       <td>${esc(r.fecha_instalacion || '-')}</td>
       <td>${esc(r.fecha_desinstalacion || '-')}</td>
@@ -213,7 +205,7 @@ function renderDetailTable(){
       <td>${fmtStatus(r.status)}</td>
       <td><div class="progress"><div class="bar"><span style="width:${Math.min(Number(r.avance)||0,100)}%"></span></div>${esc(r.avance)}%</div></td>
       <td>${fmtDays(r.dias)}</td>
-    </tr>`).join('') || `<tr><td colspan="18" class="muted" style="text-align:center;padding:28px">Sin registros</td></tr>`;
+    </tr>`).join('') || `<tr><td colspan="14" class="muted" style="text-align:center;padding:28px">Sin registros</td></tr>`;
 }
 
 function renderSide(data){
