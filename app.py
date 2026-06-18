@@ -1,15 +1,14 @@
 from flask import Flask, render_template, jsonify
 import pandas as pd
 from datetime import datetime
-from pathlib import Path
 from collections import Counter
-import shutil
 import tempfile
 import os
+import requests
 
 app = Flask(__name__)
 
-EXCEL_PATH = Path(r"C:\Users\Paulo Estrada\OneDrive - btlmarketing.com.ni\ORDENES DE PRODUCCION.xlsx")
+EXCEL_URL = "https://netorg12022531-my.sharepoint.com/:x:/g/personal/digitador1_btlmarketing_com_ni/IQA9XnkqjcL1T6_3eui1qzCKAeKU0dhfU-RCUuuyoKp7W7k?e=PeeJzc"
 SHEET_NAME = "Sheet1"
 
 DATE_COLUMNS = [
@@ -40,33 +39,28 @@ def is_process(status):
 
 
 def read_excel_safe():
-    temp_path = None
+    download_url = EXCEL_URL.replace("?e=", "?download=1&e=")
+
+    response = requests.get(download_url, timeout=30)
+    response.raise_for_status()
+
+    temp_file = tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False)
+    temp_path = temp_file.name
+    temp_file.close()
+
     try:
-        print("EXCEL LOCAL:", EXCEL_PATH)
-        print("MODIFICADO:", datetime.fromtimestamp(EXCEL_PATH.stat().st_mtime))
+        with open(temp_path, "wb") as f:
+            f.write(response.content)
 
-        temp_file = tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False)
-        temp_path = temp_file.name
-        temp_file.close()
-
-        shutil.copy2(EXCEL_PATH, temp_path)
-
-        df = pd.read_excel(
+        return pd.read_excel(
             temp_path,
             sheet_name=SHEET_NAME,
             engine="openpyxl"
         )
-
-        print(df[["Número de OP", "Status"]].tail(5))
-
-        return df
-
     finally:
-        if temp_path and os.path.exists(temp_path):
-            try:
-                os.remove(temp_path)
-            except Exception:
-                pass
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+
 
 def get_priority(dias, status):
     if is_done(status):
@@ -130,23 +124,12 @@ def get_priority(dias, status):
 
 
 def read_excel():
-    if not EXCEL_PATH.exists():
-        return {
-            "ok": False,
-            "error": f"No encontré el archivo: {EXCEL_PATH}",
-            "rows": [],
-            "kpis": {},
-            "responsables": [],
-            "urgentes": [],
-            "recientes": [],
-        }
-
     try:
         raw_df = read_excel_safe()
     except Exception as e:
         return {
             "ok": False,
-            "error": f"No pude leer el Excel: {e}",
+            "error": f"No pude leer el Excel desde SharePoint: {e}",
             "rows": [],
             "kpis": {},
             "responsables": [],
@@ -196,12 +179,12 @@ def read_excel():
 
         records.append({
             "index": int(index),
-
             "nombre": safe_text(row.get("Nombre", "")),
             "categoria": safe_text(row.get("Categoría (C)", "")),
             "op": safe_text(row.get("Número de OP", "")) or "Sin OP",
             "proyecto": safe_text(row.get("Proyecto", "")),
             "fecha_entrega": safe_text(row.get("Fecha de entrega", "")),
+            "entrega": safe_text(row.get("Fecha de entrega", "")),
             "cliente": safe_text(row.get("Cliente", "")),
             "marca": safe_text(row.get("Marca", "")),
             "fecha_aprobacion": safe_text(row.get("Fecha de aprobación", "")),
@@ -235,11 +218,9 @@ def read_excel():
     proximas = [r for r in pendientes if r["dias"] is not None and 1 <= r["dias"] <= 3]
     sin_fecha = [r for r in pendientes if r["dias"] is None]
 
-    pendientes_por_responsable = Counter(r["responsable"] for r in pendientes)
-
     responsables = [
         {"nombre": nombre, "total": total}
-        for nombre, total in pendientes_por_responsable.most_common(10)
+        for nombre, total in Counter(r["responsable"] for r in pendientes).most_common(10)
     ]
 
     urgentes = [
@@ -277,21 +258,6 @@ def index():
 @app.route("/api/ordenes")
 def api_ordenes():
     return jsonify(read_excel())
-
-@app.route("/api/version")
-def version():
-    if not EXCEL_PATH.exists():
-        return jsonify({
-            "ok": False,
-            "modified": None,
-            "error": "Archivo no encontrado"
-        })
-
-    return jsonify({
-        "ok": True,
-        "modified": EXCEL_PATH.stat().st_mtime,
-        "modified_text": datetime.fromtimestamp(EXCEL_PATH.stat().st_mtime).strftime("%d/%m/%Y %I:%M:%S %p")
-    })
 
 
 @app.after_request
