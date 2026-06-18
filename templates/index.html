@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BTL Producción | Bandeja de Trabajo</title>
+  <style>
+    :root{
+      --bg:#06101e; --panel:#0d1b2e; --panel2:#10243d; --text:#f8fafc; --muted:#9fb3c8;
+      --blue:#38bdf8; --green:#22c55e; --yellow:#facc15; --red:#ef4444; --orange:#fb923c; --purple:#a78bfa;
+      --border:rgba(255,255,255,.11); --shadow:0 22px 60px rgba(0,0,0,.38);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top left,#143d65 0,#07111f 44%,#020617 100%);color:var(--text);overflow:hidden}
+    .screen{height:100vh;padding:20px;display:flex;flex-direction:column;gap:16px}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:18px}
+    .brand{display:flex;align-items:center;gap:15px}
+    .logo{width:58px;height:58px;border-radius:19px;background:linear-gradient(135deg,var(--blue),var(--purple));display:grid;place-items:center;font-weight:950;font-size:22px;box-shadow:0 0 35px rgba(56,189,248,.36)}
+    h1{margin:0;font-size:31px;letter-spacing:.4px;line-height:1.08}.subtitle{color:var(--muted);font-size:15px;margin-top:5px}.clock{text-align:right;color:var(--muted);font-size:14px}.clock b{display:block;color:#fff;font-size:19px;margin-top:4px}.mode{margin-top:8px;font-size:12px;color:#bae6fd;border:1px solid rgba(56,189,248,.25);padding:6px 10px;border-radius:999px;display:inline-block}
+    .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:13px}.card{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));border:1px solid var(--border);border-radius:21px;padding:15px 16px;box-shadow:0 16px 40px rgba(0,0,0,.25);min-height:105px}.card:after{content:"";position:absolute;right:-30px;top:-35px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.045)}
+    .card .label{color:var(--muted);font-size:13px}.card .value{font-size:35px;font-weight:950;margin:7px 0 3px}.card .note{font-size:12px;color:var(--muted)}.urgent-card{border-color:rgba(239,68,68,.45);box-shadow:0 0 0 1px rgba(239,68,68,.08),0 16px 45px rgba(239,68,68,.08)}.today-card{border-color:rgba(250,204,21,.38)}
+    .filters{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.filter{border:1px solid var(--border);background:rgba(255,255,255,.045);color:#dbeafe;border-radius:999px;padding:9px 13px;font-weight:800;font-size:12px;cursor:pointer}.filter.active{background:linear-gradient(90deg,rgba(56,189,248,.25),rgba(34,197,94,.18));border-color:rgba(56,189,248,.5);color:#fff}.hint{margin-left:auto;color:var(--muted);font-size:12px}
+    .grid{flex:1;display:grid;grid-template-columns:1fr 385px;gap:15px;min-height:0}.panel{background:rgba(13,27,46,.78);border:1px solid var(--border);border-radius:24px;overflow:hidden;box-shadow:var(--shadow);min-height:0}.panel-head{padding:15px 17px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}.panel-title{font-weight:900;font-size:19px}.pill{font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:7px 10px;white-space:nowrap}
+    .table-wrap{height:100%;overflow:auto} table{width:100%;border-collapse:collapse} th{position:sticky;top:0;background:#10243d;color:#cbd5e1;font-size:12px;text-align:left;padding:13px 12px;z-index:2;white-space:nowrap} td{padding:12px;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;color:#e5e7eb;vertical-align:middle} tr.row-urgent{background:linear-gradient(90deg,rgba(239,68,68,.13),transparent)}tr.row-today{background:linear-gradient(90deg,rgba(250,204,21,.10),transparent)}tr.row-soon{background:linear-gradient(90deg,rgba(251,146,60,.09),transparent)}tr.row-done{opacity:.72} tr:hover{background:rgba(255,255,255,.055)}
+    .priority{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:7px 10px;font-weight:950;font-size:12px;white-space:nowrap}.p-urgent{background:rgba(239,68,68,.18);color:#fecaca;border:1px solid rgba(239,68,68,.35)}.p-today{background:rgba(250,204,21,.18);color:#fef3c7;border:1px solid rgba(250,204,21,.35)}.p-soon{background:rgba(251,146,60,.16);color:#fed7aa;border:1px solid rgba(251,146,60,.32)}.p-normal{background:rgba(34,197,94,.13);color:#bbf7d0;border:1px solid rgba(34,197,94,.25)}.p-done{background:rgba(34,197,94,.18);color:#86efac;border:1px solid rgba(34,197,94,.35)}.p-none{background:rgba(148,163,184,.16);color:#e2e8f0;border:1px solid rgba(148,163,184,.28)}
+    .status{padding:6px 10px;border-radius:999px;font-weight:850;font-size:11px;display:inline-block;white-space:nowrap}.s-ok{background:rgba(34,197,94,.18);color:#86efac}.s-proc{background:rgba(56,189,248,.16);color:#bae6fd}.s-other{background:rgba(148,163,184,.16);color:#cbd5e1}
+    .bar{height:10px;background:rgba(255,255,255,.10);border-radius:999px;overflow:hidden;min-width:85px}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:999px}.progress{display:flex;align-items:center;gap:8px;font-weight:900}.days{font-weight:950}.d-red{color:#fca5a5}.d-yellow{color:#fde68a}.d-green{color:#86efac}.muted{color:var(--muted)}
+    .side{padding:15px;display:flex;flex-direction:column;gap:13px}.section-title{font-size:18px;font-weight:950;margin:2px 0 0}.small-list{display:flex;flex-direction:column;gap:9px;overflow:auto;min-height:0}.item{background:rgba(255,255,255,.048);border:1px solid var(--border);border-radius:16px;padding:11px 12px}.item.urgent{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.10)}.item.today{border-color:rgba(250,204,21,.32);background:rgba(250,204,21,.08)}.item-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:950}.item small{display:block;color:var(--muted);margin-top:4px;line-height:1.25}.load-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.load-row b{font-size:14px}.load-badge{background:rgba(56,189,248,.15);color:#bae6fd;border:1px solid rgba(56,189,248,.3);padding:5px 9px;border-radius:999px;font-weight:950}.empty{color:var(--muted);font-size:13px;padding:10px;border:1px dashed var(--border);border-radius:14px;text-align:center}.error{padding:18px;background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.5);border-radius:18px;color:#fecaca;margin:14px}
+    @media(max-width:1200px){.kpis{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}.side{display:none}body{overflow:auto}.screen{height:auto}.table-wrap{max-height:70vh}.hint{display:none}}
+  </style>
+</head>
+<body>
+  <div class="screen">
+    <div class="top">
+      <div class="brand">
+        <div class="logo">BTL</div>
+        <div>
+          <h1>BTL Producción | Bandeja de Trabajo</h1>
+          <div class="subtitle">Órdenes pendientes, prioridades y fechas de entrega para el equipo de producción</div>
+        </div>
+      </div>
+      <div class="clock">
+        <div>Última actualización</div>
+        <b id="updated">Cargando...</b>
+        <span class="mode">Vista operativa · Auto-refresh 15s</span>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="card"><div class="label">📥 Recibidas</div><div class="value" id="k_recibidas">0</div><div class="note">Total de órdenes</div></div>
+      <div class="card"><div class="label">📌 Pendientes</div><div class="value" id="k_pendientes">0</div><div class="note">Por trabajar</div></div>
+      <div class="card today-card"><div class="label">⏰ Entregan hoy</div><div class="value" id="k_hoy">0</div><div class="note">Prioridad del día</div></div>
+      <div class="card urgent-card"><div class="label">🔴 Vencidas</div><div class="value" id="k_vencidas">0</div><div class="note">Atención inmediata</div></div>
+      <div class="card"><div class="label">🟡 Próximas</div><div class="value" id="k_proximas">0</div><div class="note">1 a 3 días</div></div>
+      <div class="card"><div class="label">✅ Terminadas</div><div class="value" id="k_terminadas">0</div><div class="note">Completadas</div></div>
+    </div>
+
+    <div class="filters">
+      <button class="filter active" data-filter="todas">Todas</button>
+      <button class="filter" data-filter="pendientes">Pendientes</button>
+      <button class="filter" data-filter="urgente">Urgentes</button>
+      <button class="filter" data-filter="hoy">Hoy</button>
+      <button class="filter" data-filter="proxima">Próximas</button>
+      <button class="filter" data-filter="terminada">Terminadas</button>
+      <span class="hint">La tabla se ordena automáticamente por prioridad de producción</span>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Cola de órdenes para producción</div>
+          <div class="pill" id="visibleCount">0 órdenes visibles</div>
+        </div>
+        <div id="errorBox"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Prioridad</th><th>OP</th><th>Cliente</th><th>Proyecto</th><th>Marca</th><th>Responsable</th><th>Entrega</th><th>Estado</th><th>Avance</th><th>Días</th><th>Brief</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel side">
+        <div class="section-title">🔥 Atención inmediata</div>
+        <div class="small-list" id="urgentList"></div>
+        <div class="section-title">👤 Carga por responsable</div>
+        <div class="small-list" id="loadList"></div>
+        <div class="section-title">🆕 Últimas recibidas</div>
+        <div class="small-list" id="recentList"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+let allRows = [];
+let currentFilter = 'todas';
+
+const esc = v => String(v ?? '').replace(/[&<>'"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
+const isDone = s => ['terminado','finalizado','completado','cerrado'].some(w => String(s||'').toLowerCase().includes(w));
+const isProcess = s => ['proceso','produccion','producción','trabajando'].some(w => String(s||'').toLowerCase().includes(w));
+
+const fmtStatus = s => {
+  const cls = isDone(s) ? 's-ok' : isProcess(s) ? 's-proc' : 's-other';
+  return `<span class="status ${cls}">${esc(s || 'Sin status')}</span>`;
+};
+const fmtPriority = r => `<span class="priority ${r.prioridad.class}">${r.prioridad.emoji} ${r.prioridad.label}</span>`;
+const fmtDays = d => {
+  if(d === null || d === undefined) return `<span class="days muted">-</span>`;
+  const cls = d < 0 ? 'd-red' : d <= 3 ? 'd-yellow' : 'd-green';
+  return `<span class="days ${cls}">${d}</span>`;
+};
+const rowClass = r => {
+  const key = r.prioridad.key;
+  if(key === 'vencida') return 'row-urgent';
+  if(key === 'hoy') return 'row-today';
+  if(key === 'proxima') return 'row-soon';
+  if(key === 'terminada') return 'row-done';
+  return '';
+};
+const showRow = r => {
+  const key = r.prioridad.key;
+  if(currentFilter === 'todas') return true;
+  if(currentFilter === 'pendientes') return !isDone(r.status);
+  if(currentFilter === 'urgente') return key === 'vencida';
+  if(currentFilter === 'hoy') return key === 'hoy';
+  if(currentFilter === 'proxima') return key === 'proxima';
+  if(currentFilter === 'terminada') return key === 'terminada';
+  return true;
+};
+
+function renderTable(){
+  const rows = allRows.filter(showRow);
+  visibleCount.textContent = `${rows.length} órdenes visibles`;
+  tbody.innerHTML = rows.map(r => `
+    <tr class="${rowClass(r)}">
+      <td>${fmtPriority(r)}<div class="muted" style="font-size:11px;margin-top:5px">${esc(r.prioridad.message)}</div></td>
+      <td><b>${esc(r.op)}</b></td>
+      <td>${esc(r.cliente)}</td>
+      <td>${esc(r.proyecto)}</td>
+      <td>${esc(r.marca)}</td>
+      <td>${esc(r.responsable)}</td>
+      <td><b>${esc(r.entrega || '-')}</b></td>
+      <td>${fmtStatus(r.status)}</td>
+      <td><div class="progress"><div class="bar"><span style="width:${Math.min(Number(r.avance)||0,100)}%"></span></div>${esc(r.avance)}%</div></td>
+      <td>${fmtDays(r.dias)}</td>
+      <td>${r.brief ? `<a style="color:#7dd3fc;font-weight:800" href="${esc(r.brief)}" target="_blank">Ver</a>` : '<span class="muted">-</span>'}</td>
+    </tr>`).join('') || `<tr><td colspan="11" class="muted" style="text-align:center;padding:28px">No hay órdenes para este filtro</td></tr>`;
+}
+
+function renderSide(data){
+  urgentList.innerHTML = data.urgentes.length ? data.urgentes.map(r => `
+    <div class="item ${r.prioridad.key === 'vencida' ? 'urgent' : r.prioridad.key === 'hoy' ? 'today' : ''}">
+      <div class="item-top"><span>OP ${esc(r.op)}</span>${fmtPriority(r)}</div>
+      <small>${esc(r.cliente)} · ${esc(r.proyecto)}<br>${esc(r.prioridad.message)} · Entrega: ${esc(r.entrega || '-')}</small>
+    </div>`).join('') : `<div class="empty">Sin órdenes urgentes por ahora</div>`;
+
+  loadList.innerHTML = data.responsables.length ? data.responsables.map(x => `
+    <div class="item"><div class="load-row"><b>${esc(x.nombre)}</b><span class="load-badge">${x.total}</span></div></div>`).join('') : `<div class="empty">Sin pendientes asignadas</div>`;
+
+  recentList.innerHTML = data.recientes.length ? data.recientes.map(r => `
+    <div class="item"><div class="item-top"><span>OP ${esc(r.op)}</span>${fmtDays(r.dias)}</div><small>${esc(r.cliente)} · ${esc(r.proyecto)}</small></div>`).join('') : `<div class="empty">Sin registros</div>`;
+}
+
+async function loadData(){
+  try{
+    const res = await fetch('/api/ordenes?ts=' + Date.now());
+    const data = await res.json();
+    if(!data.ok){errorBox.innerHTML=`<div class="error">${esc(data.error)}</div>`;return;}
+    errorBox.innerHTML='';
+    updated.textContent = data.updated_at;
+    const k = data.kpis;
+    k_recibidas.textContent=k.recibidas; k_pendientes.textContent=k.pendientes; k_hoy.textContent=k.hoy; k_vencidas.textContent=k.vencidas; k_proximas.textContent=k.proximas; k_terminadas.textContent=k.terminadas;
+    allRows = data.rows || [];
+    renderTable();
+    renderSide(data);
+  }catch(e){errorBox.innerHTML=`<div class="error">Error cargando datos: ${esc(e)}</div>`;}
+}
+
+document.querySelectorAll('.filter').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = btn.dataset.filter;
+  renderTable();
+}));
+
+let ultimaVersion = null;
+
+async function verificarCambios(){
+  try{
+    const res = await fetch('/api/version?ts=' + Date.now());
+    const data = await res.json();
+
+    if(!data.ok) return;
+
+    if(ultimaVersion === null){
+      ultimaVersion = data.modified;
+      await loadData();
+      return;
+    }
+
+    if(data.modified !== ultimaVersion){
+      ultimaVersion = data.modified;
+      await loadData();
+    }
+  }catch(e){
+    console.log('No se pudo verificar versión:', e);
+  }
+}
+
+loadData();
+
+setInterval(() => {
+  loadData();
+}, 5000);
+</script>
+</body>
+</html>
