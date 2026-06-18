@@ -11,8 +11,8 @@
       --border:rgba(255,255,255,.11); --shadow:0 22px 60px rgba(0,0,0,.38);
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top left,#143d65 0,#07111f 44%,#020617 100%);color:var(--text);overflow:hidden}
-    .screen{height:100vh;padding:20px;display:flex;flex-direction:column;gap:16px}
+    body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top left,#143d65 0,#07111f 44%,#020617 100%);color:var(--text);overflow:auto}
+    .screen{min-height:100vh;padding:20px;display:flex;flex-direction:column;gap:16px}
     .top{display:flex;justify-content:space-between;align-items:center;gap:18px}
     .brand{display:flex;align-items:center;gap:15px}
     .logo{width:58px;height:58px;border-radius:19px;background:linear-gradient(135deg,var(--blue),var(--purple));display:grid;place-items:center;font-weight:950;font-size:22px;box-shadow:0 0 35px rgba(56,189,248,.36)}
@@ -20,13 +20,14 @@
     .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:13px}.card{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));border:1px solid var(--border);border-radius:21px;padding:15px 16px;box-shadow:0 16px 40px rgba(0,0,0,.25);min-height:105px}.card:after{content:"";position:absolute;right:-30px;top:-35px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.045)}
     .card .label{color:var(--muted);font-size:13px}.card .value{font-size:35px;font-weight:950;margin:7px 0 3px}.card .note{font-size:12px;color:var(--muted)}.urgent-card{border-color:rgba(239,68,68,.45);box-shadow:0 0 0 1px rgba(239,68,68,.08),0 16px 45px rgba(239,68,68,.08)}.today-card{border-color:rgba(250,204,21,.38)}
     .filters{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.filter{border:1px solid var(--border);background:rgba(255,255,255,.045);color:#dbeafe;border-radius:999px;padding:9px 13px;font-weight:800;font-size:12px;cursor:pointer}.filter.active{background:linear-gradient(90deg,rgba(56,189,248,.25),rgba(34,197,94,.18));border-color:rgba(56,189,248,.5);color:#fff}.hint{margin-left:auto;color:var(--muted);font-size:12px}
-    .grid{flex:1;display:grid;grid-template-columns:1fr 385px;gap:15px;min-height:0}.panel{background:rgba(13,27,46,.78);border:1px solid var(--border);border-radius:24px;overflow:hidden;box-shadow:var(--shadow);min-height:0}.panel-head{padding:15px 17px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}.panel-title{font-weight:900;font-size:19px}.pill{font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:7px 10px;white-space:nowrap}
-    .table-wrap{height:100%;overflow:auto} table{width:100%;border-collapse:collapse} th{position:sticky;top:0;background:#10243d;color:#cbd5e1;font-size:12px;text-align:left;padding:13px 12px;z-index:2;white-space:nowrap} td{padding:12px;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;color:#e5e7eb;vertical-align:middle} tr.row-urgent{background:linear-gradient(90deg,rgba(239,68,68,.13),transparent)}tr.row-today{background:linear-gradient(90deg,rgba(250,204,21,.10),transparent)}tr.row-soon{background:linear-gradient(90deg,rgba(251,146,60,.09),transparent)}tr.row-done{opacity:.72} tr:hover{background:rgba(255,255,255,.055)}
+    .grid{display:grid;grid-template-columns:1fr 385px;gap:15px;min-height:420px}.panel{background:rgba(13,27,46,.78);border:1px solid var(--border);border-radius:24px;overflow:hidden;box-shadow:var(--shadow);min-height:0}.panel-head{padding:15px 17px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}.panel-title{font-weight:900;font-size:19px}.pill{font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:7px 10px;white-space:nowrap}
+    .table-wrap{overflow:auto;max-height:390px} table{width:100%;border-collapse:collapse} th{position:sticky;top:0;background:#10243d;color:#cbd5e1;font-size:12px;text-align:left;padding:13px 12px;z-index:2;white-space:nowrap} td{padding:12px;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;color:#e5e7eb;vertical-align:middle} tr.row-urgent{background:linear-gradient(90deg,rgba(239,68,68,.13),transparent)}tr.row-today{background:linear-gradient(90deg,rgba(250,204,21,.10),transparent)}tr.row-soon{background:linear-gradient(90deg,rgba(251,146,60,.09),transparent)}tr.row-done{opacity:.72} tr:hover{background:rgba(255,255,255,.055)}
     .priority{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:7px 10px;font-weight:950;font-size:12px;white-space:nowrap}.p-urgent{background:rgba(239,68,68,.18);color:#fecaca;border:1px solid rgba(239,68,68,.35)}.p-today{background:rgba(250,204,21,.18);color:#fef3c7;border:1px solid rgba(250,204,21,.35)}.p-soon{background:rgba(251,146,60,.16);color:#fed7aa;border:1px solid rgba(251,146,60,.32)}.p-normal{background:rgba(34,197,94,.13);color:#bbf7d0;border:1px solid rgba(34,197,94,.25)}.p-done{background:rgba(34,197,94,.18);color:#86efac;border:1px solid rgba(34,197,94,.35)}.p-none{background:rgba(148,163,184,.16);color:#e2e8f0;border:1px solid rgba(148,163,184,.28)}
     .status{padding:6px 10px;border-radius:999px;font-weight:850;font-size:11px;display:inline-block;white-space:nowrap}.s-ok{background:rgba(34,197,94,.18);color:#86efac}.s-proc{background:rgba(56,189,248,.16);color:#bae6fd}.s-other{background:rgba(148,163,184,.16);color:#cbd5e1}
     .bar{height:10px;background:rgba(255,255,255,.10);border-radius:999px;overflow:hidden;min-width:85px}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:999px}.progress{display:flex;align-items:center;gap:8px;font-weight:900}.days{font-weight:950}.d-red{color:#fca5a5}.d-yellow{color:#fde68a}.d-green{color:#86efac}.muted{color:var(--muted)}
     .side{padding:15px;display:flex;flex-direction:column;gap:13px}.section-title{font-size:18px;font-weight:950;margin:2px 0 0}.small-list{display:flex;flex-direction:column;gap:9px;overflow:auto;min-height:0}.item{background:rgba(255,255,255,.048);border:1px solid var(--border);border-radius:16px;padding:11px 12px}.item.urgent{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.10)}.item.today{border-color:rgba(250,204,21,.32);background:rgba(250,204,21,.08)}.item-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:950}.item small{display:block;color:var(--muted);margin-top:4px;line-height:1.25}.load-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.load-row b{font-size:14px}.load-badge{background:rgba(56,189,248,.15);color:#bae6fd;border:1px solid rgba(56,189,248,.3);padding:5px 9px;border-radius:999px;font-weight:950}.empty{color:var(--muted);font-size:13px;padding:10px;border:1px dashed var(--border);border-radius:14px;text-align:center}.error{padding:18px;background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.5);border-radius:18px;color:#fecaca;margin:14px}
-    @media(max-width:1200px){.kpis{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}.side{display:none}body{overflow:auto}.screen{height:auto}.table-wrap{max-height:70vh}.hint{display:none}}
+    .detail-panel{margin-top:2px}.detail-wrap{overflow:auto;max-height:42vh}.detail-table{min-width:2100px}.detail-table th{font-size:11px}.detail-table td{font-size:12px;white-space:nowrap}.detail-table td.long{max-width:240px;white-space:normal;line-height:1.25}.detail-table .link{color:#7dd3fc;font-weight:800;text-decoration:none}.detail-subtitle{color:var(--muted);font-size:12px;margin-top:3px}.detail-count{font-size:12px;color:#bae6fd;border:1px solid rgba(56,189,248,.28);padding:7px 10px;border-radius:999px;white-space:nowrap}
+    @media(max-width:1200px){.kpis{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}.side{display:none}.hint{display:none}.table-wrap{max-height:70vh}}
   </style>
 </head>
 <body>
@@ -62,7 +63,7 @@
       <button class="filter" data-filter="hoy">Hoy</button>
       <button class="filter" data-filter="proxima">Próximas</button>
       <button class="filter" data-filter="terminada">Terminadas</button>
-      <span class="hint">La tabla se ordena automáticamente por prioridad de producción</span>
+      <span class="hint">La tabla superior muestra la cola operativa; abajo está el detalle completo</span>
     </div>
 
     <div class="grid">
@@ -93,11 +94,49 @@
         <div class="small-list" id="recentList"></div>
       </div>
     </div>
+
+    <div class="panel detail-panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Detalle completo de órdenes</div>
+          <div class="detail-subtitle">Incluye todos los campos del formulario. Desplázate horizontalmente para ver todas las columnas.</div>
+        </div>
+        <div class="detail-count" id="detailCount">0 registros</div>
+      </div>
+      <div class="detail-wrap">
+        <table class="detail-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Categoría (C)</th>
+              <th>Número de OP</th>
+              <th>Proyecto</th>
+              <th>Fecha de entrega</th>
+              <th>Cliente</th>
+              <th>Marca</th>
+              <th>Fecha de aprobación</th>
+              <th>Entregar</th>
+              <th>Entregar a</th>
+              <th>Lugar de instalación</th>
+              <th>Fecha de instalación</th>
+              <th>Fecha de desinstalación</th>
+              <th>Presupuestista</th>
+              <th>Brief</th>
+              <th>Status</th>
+              <th>% avance</th>
+              <th>Días de Vencimiento</th>
+            </tr>
+          </thead>
+          <tbody id="detailBody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
 <script>
 let allRows = [];
 let currentFilter = 'todas';
+let isLoading = false;
 
 const esc = v => String(v ?? '').replace(/[&<>'"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
 const isDone = s => ['terminado','finalizado','completado','cerrado'].some(w => String(s||'').toLowerCase().includes(w));
@@ -113,6 +152,7 @@ const fmtDays = d => {
   const cls = d < 0 ? 'd-red' : d <= 3 ? 'd-yellow' : 'd-green';
   return `<span class="days ${cls}">${d}</span>`;
 };
+const briefLink = href => href ? `<a class="link" style="color:#7dd3fc;font-weight:800" href="${esc(href)}" target="_blank">Ver</a>` : '<span class="muted">-</span>';
 const rowClass = r => {
   const key = r.prioridad.key;
   if(key === 'vencida') return 'row-urgent';
@@ -143,19 +183,44 @@ function renderTable(){
       <td>${esc(r.proyecto)}</td>
       <td>${esc(r.marca)}</td>
       <td>${esc(r.responsable)}</td>
-      <td><b>${esc(r.entrega || '-')}</b></td>
+      <td><b>${esc(r.entrega || r.fecha_entrega || '-')}</b></td>
       <td>${fmtStatus(r.status)}</td>
       <td><div class="progress"><div class="bar"><span style="width:${Math.min(Number(r.avance)||0,100)}%"></span></div>${esc(r.avance)}%</div></td>
       <td>${fmtDays(r.dias)}</td>
-      <td>${r.brief ? `<a style="color:#7dd3fc;font-weight:800" href="${esc(r.brief)}" target="_blank">Ver</a>` : '<span class="muted">-</span>'}</td>
+      <td>${briefLink(r.brief)}</td>
     </tr>`).join('') || `<tr><td colspan="11" class="muted" style="text-align:center;padding:28px">No hay órdenes para este filtro</td></tr>`;
+}
+
+function renderDetailTable(){
+  detailCount.textContent = `${allRows.length} registros`;
+  detailBody.innerHTML = allRows.map(r => `
+    <tr class="${rowClass(r)}">
+      <td>${esc(r.nombre || '-')}</td>
+      <td>${esc(r.categoria || '-')}</td>
+      <td><b>${esc(r.op || '-')}</b></td>
+      <td class="long">${esc(r.proyecto || '-')}</td>
+      <td>${esc(r.fecha_entrega || r.entrega || '-')}</td>
+      <td>${esc(r.cliente || '-')}</td>
+      <td>${esc(r.marca || '-')}</td>
+      <td>${esc(r.fecha_aprobacion || '-')}</td>
+      <td>${esc(r.entregar || '-')}</td>
+      <td>${esc(r.entregar_a || '-')}</td>
+      <td class="long">${esc(r.lugar_instalacion || '-')}</td>
+      <td>${esc(r.fecha_instalacion || '-')}</td>
+      <td>${esc(r.fecha_desinstalacion || '-')}</td>
+      <td>${esc(r.responsable || '-')}</td>
+      <td>${briefLink(r.brief)}</td>
+      <td>${fmtStatus(r.status)}</td>
+      <td><div class="progress"><div class="bar"><span style="width:${Math.min(Number(r.avance)||0,100)}%"></span></div>${esc(r.avance)}%</div></td>
+      <td>${fmtDays(r.dias)}</td>
+    </tr>`).join('') || `<tr><td colspan="18" class="muted" style="text-align:center;padding:28px">Sin registros</td></tr>`;
 }
 
 function renderSide(data){
   urgentList.innerHTML = data.urgentes.length ? data.urgentes.map(r => `
     <div class="item ${r.prioridad.key === 'vencida' ? 'urgent' : r.prioridad.key === 'hoy' ? 'today' : ''}">
       <div class="item-top"><span>OP ${esc(r.op)}</span>${fmtPriority(r)}</div>
-      <small>${esc(r.cliente)} · ${esc(r.proyecto)}<br>${esc(r.prioridad.message)} · Entrega: ${esc(r.entrega || '-')}</small>
+      <small>${esc(r.cliente)} · ${esc(r.proyecto)}<br>${esc(r.prioridad.message)} · Entrega: ${esc(r.entrega || r.fecha_entrega || '-')}</small>
     </div>`).join('') : `<div class="empty">Sin órdenes urgentes por ahora</div>`;
 
   loadList.innerHTML = data.responsables.length ? data.responsables.map(x => `
@@ -165,51 +230,25 @@ function renderSide(data){
     <div class="item"><div class="item-top"><span>OP ${esc(r.op)}</span>${fmtDays(r.dias)}</div><small>${esc(r.cliente)} · ${esc(r.proyecto)}</small></div>`).join('') : `<div class="empty">Sin registros</div>`;
 }
 
-let cargandoDatos = false;
-
 async function loadData(){
-  if(cargandoDatos) return;
-
-  cargandoDatos = true;
-
+  if(isLoading) return;
+  isLoading = true;
   try{
-    const res = await fetch('/api/ordenes?nocache=' + new Date().getTime(), {
-      method: 'GET',
-      cache: 'no-store',
-      headers: {
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
-      }
-    });
-
+    const res = await fetch('/api/ordenes?nocache=' + Date.now(), { cache: 'no-store' });
     const data = await res.json();
-
-    if(!data.ok){
-      errorBox.innerHTML = `<div class="error">${esc(data.error)}</div>`;
-      return;
-    }
-
-    errorBox.innerHTML = '';
+    if(!data.ok){errorBox.innerHTML=`<div class="error">${esc(data.error)}</div>`;return;}
+    errorBox.innerHTML='';
     updated.textContent = data.updated_at;
-
-    const k = data.kpis || {};
-    k_recibidas.textContent = k.recibidas ?? 0;
-    k_pendientes.textContent = k.pendientes ?? 0;
-    k_hoy.textContent = k.hoy ?? 0;
-    k_vencidas.textContent = k.vencidas ?? 0;
-    k_proximas.textContent = k.proximas ?? 0;
-    k_terminadas.textContent = k.terminadas ?? 0;
-
+    const k = data.kpis;
+    k_recibidas.textContent=k.recibidas; k_pendientes.textContent=k.pendientes; k_hoy.textContent=k.hoy; k_vencidas.textContent=k.vencidas; k_proximas.textContent=k.proximas; k_terminadas.textContent=k.terminadas;
     allRows = data.rows || [];
-
     renderTable();
+    renderDetailTable();
     renderSide(data);
-
-    console.log('Dashboard actualizado:', new Date().toLocaleTimeString(), allRows);
   }catch(e){
-    errorBox.innerHTML = `<div class="error">Error cargando datos: ${esc(e)}</div>`;
+    errorBox.innerHTML=`<div class="error">Error cargando datos: ${esc(e)}</div>`;
   }finally{
-    cargandoDatos = false;
+    isLoading = false;
   }
 }
 
@@ -221,10 +260,7 @@ document.querySelectorAll('.filter').forEach(btn => btn.addEventListener('click'
 }));
 
 loadData();
-
-setInterval(async () => {
-  await loadData();
-}, 3000);
+setInterval(loadData, 3000);
 </script>
 </body>
 </html>
