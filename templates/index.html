@@ -42,7 +42,7 @@
       <div class="clock">
         <div>Última actualización</div>
         <b id="updated">Cargando...</b>
-        <span class="mode">Vista operativa · Auto-refresh 15s</span>
+        <span class="mode">Vista operativa · Auto-refresh 3s</span>
       </div>
     </div>
 
@@ -165,19 +165,52 @@ function renderSide(data){
     <div class="item"><div class="item-top"><span>OP ${esc(r.op)}</span>${fmtDays(r.dias)}</div><small>${esc(r.cliente)} · ${esc(r.proyecto)}</small></div>`).join('') : `<div class="empty">Sin registros</div>`;
 }
 
+let cargandoDatos = false;
+
 async function loadData(){
+  if(cargandoDatos) return;
+
+  cargandoDatos = true;
+
   try{
-    const res = await fetch('/api/ordenes?ts=' + Date.now());
+    const res = await fetch('/api/ordenes?nocache=' + new Date().getTime(), {
+      method: 'GET',
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
+    });
+
     const data = await res.json();
-    if(!data.ok){errorBox.innerHTML=`<div class="error">${esc(data.error)}</div>`;return;}
-    errorBox.innerHTML='';
+
+    if(!data.ok){
+      errorBox.innerHTML = `<div class="error">${esc(data.error)}</div>`;
+      return;
+    }
+
+    errorBox.innerHTML = '';
     updated.textContent = data.updated_at;
-    const k = data.kpis;
-    k_recibidas.textContent=k.recibidas; k_pendientes.textContent=k.pendientes; k_hoy.textContent=k.hoy; k_vencidas.textContent=k.vencidas; k_proximas.textContent=k.proximas; k_terminadas.textContent=k.terminadas;
+
+    const k = data.kpis || {};
+    k_recibidas.textContent = k.recibidas ?? 0;
+    k_pendientes.textContent = k.pendientes ?? 0;
+    k_hoy.textContent = k.hoy ?? 0;
+    k_vencidas.textContent = k.vencidas ?? 0;
+    k_proximas.textContent = k.proximas ?? 0;
+    k_terminadas.textContent = k.terminadas ?? 0;
+
     allRows = data.rows || [];
+
     renderTable();
     renderSide(data);
-  }catch(e){errorBox.innerHTML=`<div class="error">Error cargando datos: ${esc(e)}</div>`;}
+
+    console.log('Dashboard actualizado:', new Date().toLocaleTimeString(), allRows);
+  }catch(e){
+    errorBox.innerHTML = `<div class="error">Error cargando datos: ${esc(e)}</div>`;
+  }finally{
+    cargandoDatos = false;
+  }
 }
 
 document.querySelectorAll('.filter').forEach(btn => btn.addEventListener('click', () => {
@@ -187,35 +220,11 @@ document.querySelectorAll('.filter').forEach(btn => btn.addEventListener('click'
   renderTable();
 }));
 
-let ultimaVersion = null;
-
-async function verificarCambios(){
-  try{
-    const res = await fetch('/api/version?ts=' + Date.now());
-    const data = await res.json();
-
-    if(!data.ok) return;
-
-    if(ultimaVersion === null){
-      ultimaVersion = data.modified;
-      await loadData();
-      return;
-    }
-
-    if(data.modified !== ultimaVersion){
-      ultimaVersion = data.modified;
-      await loadData();
-    }
-  }catch(e){
-    console.log('No se pudo verificar versión:', e);
-  }
-}
-
 loadData();
 
-setInterval(() => {
-  loadData();
-}, 5000);
+setInterval(async () => {
+  await loadData();
+}, 3000);
 </script>
 </body>
 </html>
