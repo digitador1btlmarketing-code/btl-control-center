@@ -476,7 +476,9 @@
       <button class="filter" data-filter="pendientes">Pendientes</button>
       <button class="filter" data-filter="terminada">Terminadas</button>
       <button class="filter" data-filter="urgente">Urgentes</button>
-      <span class="hint">🔥 aparece en órdenes vencidas o que entregan hoy</span>
+      <button class="filter" data-filter="branding">Branding</button>
+      <button class="filter" data-filter="promocional">Promocional</button>
+      <span class="hint">🔥 aparece cuando faltan menos de 3 días para la entrega</span>
     </div>
 
     <div class="panel main-panel">
@@ -556,8 +558,8 @@ const isProcess = s => ['proceso','produccion','producción','trabajando']
   .some(w => String(s || '').toLowerCase().includes(w));
 
 const isMaxPriority = r => {
-  const key = r.prioridad?.key;
-  return key === 'vencida' || key === 'hoy';
+  const dias = Number(r.dias);
+  return Number.isFinite(dias) && dias < 3;
 };
 
 const fmtStatus = s => {
@@ -592,10 +594,15 @@ const rowClass = r => {
 
 const showRow = r => {
   const key = r.prioridad?.key;
+  const categoria = (r.categoria || '').toUpperCase().trim();
+
   if (currentFilter === 'todas') return true;
   if (currentFilter === 'pendientes') return !isDone(r.status);
   if (currentFilter === 'terminada') return key === 'terminada';
   if (currentFilter === 'urgente') return key === 'vencida' || key === 'hoy';
+  if (currentFilter === 'branding') return categoria === 'BRANDING';
+  if (currentFilter === 'promocional') return categoria === 'PROMOCIONAL';
+
   return true;
 };
 
