@@ -1,7 +1,6 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 import pandas as pd
 from datetime import datetime
-from collections import Counter
 import tempfile
 import os
 import requests
@@ -35,6 +34,15 @@ def is_done(status):
 def is_process(status):
     s = safe_text(status).lower()
     return any(w in s for w in PROCESO_WORDS)
+
+
+def get_value(row, *names):
+    for name in names:
+        if name in row.index:
+            value = safe_text(row.get(name, ""))
+            if value:
+                return value
+    return ""
 
 
 def read_excel_safe():
@@ -109,13 +117,13 @@ def get_priority(dias, status):
             "message": "Entrega hoy",
         }
 
-    if dias <= 3:
+    if 1 <= dias <= 3:
         return {
             "key": "proxima",
             "label": "Próxima",
-            "emoji": "🟡",
+            "emoji": "🔥",
             "rank": 2,
-            "class": "p-soon",
+            "class": "p-fire",
             "message": f"Faltan {dias} día(s)",
         }
 
@@ -173,45 +181,67 @@ def read_excel():
         }
 
     df = raw_df.dropna(how="all").copy()
-    df = df.reset_index(drop=True)
 
-    # Dejar solo filas con OP real
-    if "Número de OP" in df.columns:
-        df["Número de OP"] = df["Número de OP"].fillna("").astype(str).str.strip()
-        df = df[
-            (df["Número de OP"] != "") &
-            (df["Número de OP"].str.lower() != "nan") &
-            (df["Número de OP"].str.lower() != "sin op")
-        ].copy()
+    if "Número de OP" not in df.columns:
+        return {
+            "ok": True,
+            "updated_at": datetime.now().strftime("%d/%m/%Y %I:%M:%S %p"),
+            "rows": [],
+            "urgentes": [],
+            "recientes": [],
+            "presupuestistas": [],
+            "responsables": [],
+            "kpis": {
+                "recibidas": 0,
+                "pendientes": 0,
+                "en_proceso": 0,
+                "terminadas": 0,
+                "vencidas": 0,
+                "hoy": 0,
+                "proximas": 0,
+                "sin_fecha": 0,
+            },
+        }
 
-    # Cuando Forms + Power Automate duplican:
-    # conservar la fila buena por Id, que es la que tiene Hora de inicio llena.
-    if "Id" in df.columns:
-        df["Id"] = df["Id"].fillna("").astype(str).str.strip()
+    df["Número de OP"] = df["Número de OP"].fillna("").astype(str).str.strip()
+    df = df[
+        (df["Número de OP"] != "") &
+        (df["Número de OP"].str.lower() != "nan") &
+        (df["Número de OP"].str.lower() != "sin op")
+    ].copy()
 
-        if "Hora de inicio" in df.columns:
-            df["_hora_inicio_llena"] = (
-                df["Hora de inicio"]
+    # Elegir la fila más completa cuando Forms + Power Automate duplican la OP
+    cols_preferidas = [
+        "Hora de finalización",
+        "Hora de inicio",
+        "Nombre",
+        "Presupuestista",
+        "Líder Producción",
+        "Lider Produccion",
+        "Status",
+        "% avance",
+    ]
+
+    df["_score_completo"] = 0
+
+    for col in cols_preferidas:
+        if col in df.columns:
+            df["_score_completo"] += (
+                df[col]
                 .fillna("")
                 .astype(str)
                 .str.strip()
                 .ne("")
-            )
+            ).astype(int)
 
-            df = (
-                df.sort_values("_hora_inicio_llena", ascending=True)
-                  .drop_duplicates(subset=["Id"], keep="last")
-                  .drop(columns=["_hora_inicio_llena"])
-            )
-        else:
-            df = df.drop_duplicates(subset=["Id"], keep="last")
+    df = (
+        df.sort_values("_score_completo", ascending=True)
+          .drop_duplicates(subset=["Número de OP"], keep="last")
+          .drop(columns=["_score_completo"])
+          .copy()
+          .reset_index(drop=True)
+    )
 
-    elif "Número de OP" in df.columns:
-        df = df.drop_duplicates(subset=["Número de OP"], keep="last")
-
-    df = df.reset_index(drop=True)
-
-    # Guardar fecha real para cálculo de días antes de convertir a texto
     if "Fecha de entrega" in df.columns:
         fecha_entrega_dt = pd.to_datetime(df["Fecha de entrega"], errors="coerce")
         hoy = pd.Timestamp(datetime.now().date())
@@ -219,13 +249,15 @@ def read_excel():
     else:
         df["Dias_Vencimiento_Calc"] = None
 
-    # Fechas para mostrar
     for col in DATE_COLUMNS:
         if col in df.columns:
             df[col] = df[col].apply(format_date_value)
 
     if "Hora de finalización" in df.columns:
         df["Hora de finalización"] = df["Hora de finalización"].apply(format_datetime_value)
+
+    if "Hora de inicio" in df.columns:
+        df["Hora de inicio"] = df["Hora de inicio"].apply(format_datetime_value)
 
     if "% avance" in df.columns:
         avance_series = (
@@ -256,27 +288,47 @@ def read_excel():
 
         status = safe_text(row.get("Status", "")) or "Sin status"
         prioridad = get_priority(dias, status)
-        presupuestista = safe_text(row.get("Presupuestista", "")) or "Sin presupuestista"
+
+        presupuestista = (
+            get_value(row, "Presupuestista")
+            or "Sin presupuestista"
+        )
+
+        lider_produccion = get_value(
+            row,
+            "Líder Producción",
+            "Lider Produccion",
+            "Líder de Producción",
+            "Lider de Produccion",
+        )
+
+        hora_solicitud = get_value(
+            row,
+            "Hora de finalización",
+            "Hora Solicitud",
+            "Hora solicitud",
+            "Hora de inicio",
+        )
 
         records.append({
             "index": i,
-            "hora_solicitud": safe_text(row.get("Hora de finalización", "")),
-            "nombre": safe_text(row.get("Nombre", "")),
-            "categoria": safe_text(row.get("Categoría (C)", "")),
-            "op": safe_text(row.get("Número de OP", "")) or "Sin OP",
-            "proyecto": safe_text(row.get("Proyecto", "")),
-            "fecha_entrega": safe_text(row.get("Fecha de entrega", "")),
-            "entrega": safe_text(row.get("Fecha de entrega", "")),
-            "cliente": safe_text(row.get("Cliente", "")),
-            "marca": safe_text(row.get("Marca", "")),
-            "entregar": safe_text(row.get("Entregar", "")),
-            "lugar_instalacion": safe_text(row.get("Lugar de instalación", "")),
-            "fecha_instalacion": safe_text(row.get("Fecha de instalación", "")),
-            "fecha_desinstalacion": safe_text(row.get("Fecha de desinstalación", "")),
+            "hora_solicitud": hora_solicitud,
+            "nombre": get_value(row, "Nombre"),
+            "categoria": get_value(row, "Categoría (C)", "Categoria (C)", "Categoría", "Categoria").upper(),
+            "op": get_value(row, "Número de OP", "Numero de OP") or "Sin OP",
+            "proyecto": get_value(row, "Proyecto"),
+            "fecha_entrega": get_value(row, "Fecha de entrega"),
+            "entrega": get_value(row, "Fecha de entrega"),
+            "cliente": get_value(row, "Cliente"),
+            "marca": get_value(row, "Marca"),
+            "entregar": get_value(row, "Entregar"),
+            "lugar_instalacion": get_value(row, "Lugar de instalación", "Lugar de instalacion"),
+            "fecha_instalacion": get_value(row, "Fecha de instalación", "Fecha de instalacion"),
+            "fecha_desinstalacion": get_value(row, "Fecha de desinstalación", "Fecha de desinstalacion"),
             "presupuestista": presupuestista,
             "responsable": presupuestista,
-            "lider_produccion": safe_text(row.get("Líder Producción", "")),
-            "brief": safe_text(row.get("Brief", "")),
+            "lider_produccion": lider_produccion,
+            "brief": get_value(row, "Brief"),
             "status": status,
             "avance": round(avance, 1),
             "dias": dias,
@@ -301,17 +353,19 @@ def read_excel():
     proximas = [r for r in pendientes if r["dias"] is not None and 1 <= r["dias"] <= 3]
     sin_fecha = [r for r in pendientes if r["dias"] is None]
 
-    carga_presupuestista = [
-        {"nombre": nombre, "total": total}
-        for nombre, total in Counter(r["presupuestista"] for r in pendientes).most_common(10)
-    ]
-
     urgentes = [
         r for r in records
         if r["prioridad"]["key"] in ["vencida", "hoy", "proxima"]
     ][:10]
 
     recientes = sorted(records, key=lambda r: r["index"], reverse=True)[:8]
+
+    carga_presupuestista = []
+    for nombre in sorted(set(r["presupuestista"] for r in pendientes)):
+        carga_presupuestista.append({
+            "nombre": nombre,
+            "total": sum(1 for r in pendientes if r["presupuestista"] == nombre)
+        })
 
     return {
         "ok": True,
@@ -334,18 +388,41 @@ def read_excel():
     }
 
 
+@app.route("/api/ordenes")
+def api_ordenes():
+    data = read_excel()
+
+    if not data.get("ok"):
+        return jsonify(data)
+
+    categoria = request.args.get("categoria", "").strip().upper()
+
+    if categoria:
+        data["rows"] = [
+            r for r in data["rows"]
+            if (r.get("categoria") or "").strip().upper() == categoria
+        ]
+
+        data["urgentes"] = [
+            r for r in data.get("urgentes", [])
+            if (r.get("categoria") or "").strip().upper() == categoria
+        ]
+
+        data["recientes"] = [
+            r for r in data.get("recientes", [])
+            if (r.get("categoria") or "").strip().upper() == categoria
+        ]
+
+    return jsonify(data)
+
+
 @app.route("/")
-def index():
+def home():
     return render_template("index.html")
 
 
-@app.route("/api/ordenes")
-def api_ordenes():
-    return jsonify(read_excel())
-
-
 @app.after_request
-def add_no_cache_headers(response):
+def no_cache(response):
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
@@ -353,4 +430,4 @@ def add_no_cache_headers(response):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(debug=True, host="0.0.0.0", port=5000)
