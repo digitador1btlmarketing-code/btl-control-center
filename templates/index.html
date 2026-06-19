@@ -101,11 +101,11 @@
       display:inline-block;
     }
 
-    .filters{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
+    .hint-tv{
+      align-self:flex-end;
+      color:var(--muted);
+      font-size:17px;
+      margin-top:-4px;
     }
 
     .filter{
@@ -125,12 +125,6 @@
       color:#fff;
     }
 
-    .hint{
-      margin-left:auto;
-      color:var(--muted);
-      font-size:16px;
-    }
-
     .panel{
       background:rgba(13,27,46,.82);
       border:1px solid var(--border);
@@ -145,37 +139,119 @@
     }
 
     .panel-head{
-      padding:20px 24px;
+      padding:18px 24px;
       border-bottom:1px solid var(--border);
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:12px;
+      gap:14px;
+    }
+
+    .table-panel-head{
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      align-items:center;
+      gap:18px;
     }
 
     .panel-title{
       font-weight:950;
-      font-size:34px;
+      font-size:32px;
+      white-space:nowrap;
+    }
+
+    .head-left{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .head-sub{
+      color:var(--muted);
+      font-size:15px;
+      font-weight:600;
+    }
+
+    .table-filters{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .table-filters .filter{
+      font-size:18px;
+      padding:11px 20px;
+    }
+
+    .head-right{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .kpi-card{
+      min-width:145px;
+      height:68px;
+      padding:10px 13px;
+      border-radius:17px;
+      background:rgba(255,255,255,.055);
+      border:1px solid var(--border);
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:3px;
+    }
+
+    .kpi-card.done{
+      border-color:rgba(34,197,94,.32);
+      background:linear-gradient(135deg,rgba(34,197,94,.18),rgba(255,255,255,.035));
+    }
+
+    .kpi-card.pending{
+      border-color:rgba(250,204,21,.32);
+      background:linear-gradient(135deg,rgba(250,204,21,.16),rgba(255,255,255,.035));
+    }
+
+    .kpi-card.urgent{
+      border-color:rgba(239,68,68,.42);
+      background:linear-gradient(135deg,rgba(239,68,68,.20),rgba(255,255,255,.035));
+    }
+
+    .kpi-label{
+      font-size:14px;
+      color:#cbd5e1;
+      font-weight:800;
+    }
+
+    .kpi-value{
+      font-size:28px;
+      line-height:1;
+      color:#fff;
+      font-weight:950;
     }
 
     .pill{
-      font-size:18px;
+      font-size:16px;
       color:#bae6fd;
       border:1px solid var(--border);
       border-radius:999px;
-      padding:10px 16px;
+      padding:9px 14px;
       white-space:nowrap;
     }
 
     .table-wrap{
       overflow:auto;
-      max-height:55vh;
+      max-height:62vh;
     }
 
     table{
       width:100%;
       border-collapse:collapse;
-      min-width:1520px;
+      min-width:1650px;
     }
 
     th{
@@ -183,21 +259,21 @@
       top:0;
       background:#10243d;
       color:#dbeafe;
-      font-size:19px;
+      font-size:20px;
       text-align:left;
-      padding:18px 17px;
+      padding:20px 18px;
       z-index:2;
       white-space:nowrap;
       border-bottom:1px solid rgba(255,255,255,.08);
     }
 
     td{
-      padding:20px 17px;
+      padding:24px 18px;
       border-bottom:1px solid rgba(255,255,255,.075);
-      font-size:21px;
+      font-size:23px;
       color:#e5e7eb;
       vertical-align:middle;
-      line-height:1.28;
+      line-height:1.22;
     }
 
     tr{
@@ -238,7 +314,7 @@
       place-items:center;
       width:46px;
       height:46px;
-      border-radius:16px;
+      border-radius:14px;
       background:rgba(239,68,68,.18);
       border:1px solid rgba(239,68,68,.38);
       box-shadow:0 0 24px rgba(239,68,68,.25);
@@ -253,7 +329,7 @@
     .priority{
       display:inline-flex;
       align-items:center;
-      gap:9px;
+      gap:8px;
       border-radius:999px;
       padding:10px 15px;
       font-weight:950;
@@ -272,7 +348,7 @@
       padding:10px 15px;
       border-radius:999px;
       font-weight:900;
-      font-size:17px;
+      font-size:18px;
       display:inline-block;
       white-space:nowrap;
     }
@@ -286,7 +362,7 @@
       background:rgba(255,255,255,.12);
       border-radius:999px;
       overflow:hidden;
-      min-width:125px;
+      min-width:145px;
     }
 
     .bar span{
@@ -301,12 +377,12 @@
       align-items:center;
       gap:12px;
       font-weight:950;
-      min-width:185px;
+      min-width:210px;
     }
 
     .days{
       font-weight:950;
-      font-size:24px;
+      font-size:26px;
     }
 
     .d-red{color:#fca5a5}
@@ -318,17 +394,12 @@
       color:#7dd3fc;
       font-weight:900;
       text-decoration:none;
-      font-size:19px;
-    }
-
-    .long{
-      max-width:330px;
-      white-space:normal;
+      font-size:20px;
     }
 
     .bottom-grid{
       display:grid;
-      grid-template-columns:1fr 1fr;
+      grid-template-columns:1fr;
       gap:16px;
     }
 
@@ -339,7 +410,7 @@
     .bottom-list{
       padding:18px;
       display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
       gap:12px;
     }
 
@@ -347,8 +418,8 @@
       background:rgba(255,255,255,.048);
       border:1px solid var(--border);
       border-radius:18px;
-      padding:14px 16px;
-      min-height:92px;
+      padding:16px 18px;
+      min-height:105px;
     }
 
     .item.urgent{
@@ -367,7 +438,7 @@
       align-items:center;
       gap:10px;
       font-weight:950;
-      font-size:22px;
+      font-size:24px;
     }
 
     .item small{
@@ -375,7 +446,7 @@
       color:var(--muted);
       margin-top:6px;
       line-height:1.35;
-      font-size:17px;
+      font-size:18px;
     }
 
     .detail-box{
@@ -439,14 +510,31 @@
       font-size:20px;
     }
 
+    @media(max-width:1400px){
+      .table-panel-head{
+        grid-template-columns:1fr;
+        align-items:flex-start;
+      }
+
+      .table-filters{
+        justify-content:flex-start;
+      }
+
+      .head-right{
+        justify-content:flex-start;
+      }
+    }
+
     @media(max-width:1200px){
       .screen{height:auto}
       h1{font-size:30px}
       .subtitle{font-size:16px}
       .top{align-items:flex-start}
-      .filters{gap:8px}
       .filter{font-size:14px;padding:9px 12px}
-      .hint{display:none}
+      .hint-tv{display:none}
+      .panel-head{align-items:flex-start;flex-direction:column}
+      .head-right{width:100%;justify-content:flex-start}
+      .kpi-card{min-width:130px}
       th{font-size:15px}
       td{font-size:16px}
       .bottom-grid{grid-template-columns:1fr}
@@ -471,20 +559,40 @@
       </div>
     </div>
 
-    <div class="filters">
-      <button class="filter active" data-filter="todas">Todas</button>
-      <button class="filter" data-filter="pendientes">Pendientes</button>
-      <button class="filter" data-filter="terminada">Terminadas</button>
-      <button class="filter" data-filter="urgente">Urgentes</button>
-      <button class="filter" data-filter="branding">Branding</button>
-      <button class="filter" data-filter="promocional">Promocional</button>
-      <span class="hint">🔥 aparece cuando faltan menos de 3 días para la entrega</span>
-    </div>
+    <div class="hint-tv">🔥 aparece cuando faltan menos de 3 días para la entrega</div>
 
     <div class="panel main-panel">
-      <div class="panel-head">
-        <div class="panel-title">Cola de órdenes para producción</div>
-        <div class="pill" id="visibleCount">0 órdenes visibles</div>
+      <div class="panel-head table-panel-head">
+        <div class="head-left">
+          <div class="panel-title">Cola de órdenes para producción</div>
+          <div class="head-sub">Resumen operativo actualizado automáticamente</div>
+        </div>
+
+        <div class="table-filters">
+          <button class="filter active" data-filter="pendientes">Pendientes</button>
+          <button class="filter" data-filter="terminada">Terminadas</button>
+          <button class="filter" data-filter="branding">Branding</button>
+          <button class="filter" data-filter="promocional">Promocional</button>
+        </div>
+
+        <div class="head-right">
+          <div class="kpi-card done">
+            <div class="kpi-label">Terminadas</div>
+            <div class="kpi-value" id="kpiTerminadas">0</div>
+          </div>
+
+          <div class="kpi-card pending">
+            <div class="kpi-label">Pendientes</div>
+            <div class="kpi-value" id="kpiPendientes">0</div>
+          </div>
+
+          <div class="kpi-card urgent">
+            <div class="kpi-label">Urgentes</div>
+            <div class="kpi-value" id="kpiUrgentes">0</div>
+          </div>
+
+          <div class="pill" id="visibleCount">0 órdenes visibles</div>
+        </div>
       </div>
 
       <div id="errorBox"></div>
@@ -520,14 +628,6 @@
         </div>
         <div class="bottom-list" id="urgentList"></div>
       </div>
-
-      <div class="panel bottom-panel">
-        <div class="panel-head">
-          <div class="panel-title">🆕 Últimas recibidas</div>
-          <div class="pill">Más recientes</div>
-        </div>
-        <div class="bottom-list" id="recentList"></div>
-      </div>
     </div>
 
     <div class="panel">
@@ -543,7 +643,7 @@
 
 <script>
 let allRows = [];
-let currentFilter = 'todas';
+let currentFilter = 'pendientes';
 let isLoading = false;
 let selectedOp = null;
 
@@ -559,8 +659,25 @@ const isProcess = s => ['proceso','produccion','producción','trabajando']
 
 const isMaxPriority = r => {
   const dias = Number(r.dias);
-  return Number.isFinite(dias) && dias < 3;
+  return Number.isFinite(dias) && dias < 3 && !isDone(r.status);
 };
+
+const isUrgent = r => {
+  const key = r.prioridad?.key;
+  return !isDone(r.status) && (key === 'vencida' || key === 'hoy' || key === 'proxima' || isMaxPriority(r));
+};
+
+function renderKpis(){
+  const base = allRows;
+
+  const terminadas = base.filter(r => isDone(r.status) || r.prioridad?.key === 'terminada').length;
+  const pendientes = base.filter(r => !isDone(r.status) && r.prioridad?.key !== 'terminada').length;
+  const urgentes = base.filter(r => isUrgent(r)).length;
+
+  kpiTerminadas.textContent = terminadas;
+  kpiPendientes.textContent = pendientes;
+  kpiUrgentes.textContent = urgentes;
+}
 
 const fmtStatus = s => {
   const cls = isDone(s) ? 's-ok' : isProcess(s) ? 's-proc' : 's-other';
@@ -596,17 +713,12 @@ const showRow = r => {
   const key = r.prioridad?.key;
   const categoria = (r.categoria || '').toUpperCase().trim();
 
-  if (currentFilter === 'todas') return true;
   if (currentFilter === 'pendientes') return !isDone(r.status);
-  if (currentFilter === 'terminada') return key === 'terminada';
-  if (currentFilter === 'urgente') return key === 'vencida' || key === 'hoy';
-  if (currentFilter === 'branding')
-  return categoria === 'BRANDING' && !isDone(r.status);
+  if (currentFilter === 'terminada') return key === 'terminada' || isDone(r.status);
+  if (currentFilter === 'branding') return categoria === 'BRANDING' && !isDone(r.status);
+  if (currentFilter === 'promocional') return categoria === 'PROMOCIONAL' && !isDone(r.status);
 
-  if (currentFilter === 'promocional')
-  return categoria === 'PROMOCIONAL' && !isDone(r.status);
-  
-  return true;
+  return !isDone(r.status);
 };
 
 function sortRows(rows){
@@ -623,6 +735,8 @@ function sortRows(rows){
 }
 
 function renderTable(){
+  renderKpis();
+
   let rows = allRows.filter(showRow);
   rows = sortRows(rows);
 
@@ -652,7 +766,7 @@ function renderTable(){
     </tr>
   `).join('') || `
     <tr>
-      <td colspan="12" class="muted" style="text-align:center;padding:35px;font-size:24px">
+      <td colspan="12" class="muted" style="text-align:center;padding:45px;font-size:28px">
         No hay órdenes para este filtro
       </td>
     </tr>`;
@@ -747,8 +861,12 @@ function mostrarDetalle(r){
   `;
 }
 
-function renderBottom(data){
-  const urgentes = (data.urgentes || []).slice(0, 6);
+function renderBottom(){
+  const urgentes = allRows
+    .filter(showRow)
+    .filter(r => isUrgent(r))
+    .slice(0, 6);
+
   urgentList.innerHTML = urgentes.length ? urgentes.map(r => `
     <div class="item ${r.prioridad?.key === 'vencida' ? 'urgent' : 'today'}">
       <div class="item-top">
@@ -762,23 +880,7 @@ function renderBottom(data){
         Entrega: ${esc(r.fecha_entrega || r.entrega || '-')}
       </small>
     </div>
-  `).join('') : `<div class="empty">Sin órdenes urgentes por ahora</div>`;
-
-  const recientes = (data.recientes || []).slice(0, 6);
-  recentList.innerHTML = recientes.length ? recientes.map(r => `
-    <div class="item">
-      <div class="item-top">
-        <span>OP ${esc(r.op || '-')}</span>
-        ${fmtPriority(r)}
-      </div>
-      <small>
-        Solicitud: ${esc(r.hora_solicitud || '-')}<br>
-        Marca: ${esc(r.marca || '-')}<br>
-        Presupuestista: ${esc(r.presupuestista || r.responsable || '-')}<br>
-        Líder: ${esc(r.lider_produccion || '-')}
-      </small>
-    </div>
-  `).join('') : `<div class="empty">Sin registros recientes</div>`;
+  `).join('') : `<div class="empty">Sin órdenes urgentes para este filtro</div>`;
 }
 
 async function loadData(){
@@ -799,7 +901,7 @@ async function loadData(){
 
     allRows = data.rows || [];
     renderTable();
-    renderBottom(data);
+    renderBottom();
 
     if (selectedOp) {
       const updatedSelected = allRows.find(r => String(r.op) === String(selectedOp));
@@ -818,6 +920,7 @@ document.querySelectorAll('.filter').forEach(btn => {
     btn.classList.add('active');
     currentFilter = btn.dataset.filter;
     renderTable();
+    renderBottom();
   };
 });
 

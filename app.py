@@ -397,45 +397,58 @@ def api_ordenes():
 
     categoria = request.args.get("categoria", "").strip().upper()
 
-    if categoria:
-        # Filtrar por categoría
-        data["rows"] = [
-            r for r in data["rows"]
+    rows = data["rows"]
+
+    # =========================
+    # FILTRO POR CATEGORÍA
+    # =========================
+    if categoria and categoria != "TODAS":
+
+        rows = [
+            r for r in rows
             if (r.get("categoria") or "").strip().upper() == categoria
         ]
 
-        # En BRANDING y PROMOCIONAL solo mostrar NO terminadas
+        # 🔥 SOLO BRANDING / PROMOCIONAL: NO TERMINADAS
         if categoria in ["BRANDING", "PROMOCIONAL"]:
-            data["rows"] = [
-                r for r in data["rows"]
+            rows = [
+                r for r in rows
                 if not is_done(r.get("status", ""))
             ]
 
-        data["urgentes"] = [
-            r for r in data.get("urgentes", [])
-            if (r.get("categoria") or "").strip().upper() == categoria
-            and not is_done(r.get("status", ""))
-        ]
+    # =========================
+    # RECONSTRUIR KPIs DESPUÉS DEL FILTRO
+    # =========================
+    pendientes = [r for r in rows if not is_done(r.get("status", ""))]
+    terminadas = [r for r in rows if is_done(r.get("status", ""))]
 
-        data["recientes"] = [
-            r for r in data.get("recientes", [])
-            if (r.get("categoria") or "").strip().upper() == categoria
-            and not is_done(r.get("status", ""))
-        ]
+    data["rows"] = rows
 
-        pendientes = [r for r in data["rows"] if not is_done(r.get("status", ""))]
-        terminadas = [r for r in data["rows"] if is_done(r.get("status", ""))]
+    data["kpis"] = {
+        "recibidas": len(rows),
+        "pendientes": len(pendientes),
+        "terminadas": len(terminadas),
+        "en_proceso": len([r for r in rows if is_process(r.get("status", ""))]),
+        "vencidas": len([r for r in pendientes if r.get("dias") is not None and r.get("dias") < 0]),
+        "hoy": len([r for r in pendientes if r.get("dias") == 0]),
+        "proximas": len([r for r in pendientes if r.get("dias") is not None and 1 <= r.get("dias") <= 3]),
+        "sin_fecha": len([r for r in pendientes if r.get("dias") is None]),
+    }
 
-        data["kpis"] = {
-            "recibidas": len(data["rows"]),
-            "pendientes": len(pendientes),
-            "en_proceso": len([r for r in data["rows"] if is_process(r.get("status", ""))]),
-            "terminadas": len(terminadas),
-            "vencidas": len([r for r in pendientes if r.get("dias") is not None and r.get("dias") < 0]),
-            "hoy": len([r for r in pendientes if r.get("dias") == 0]),
-            "proximas": len([r for r in pendientes if r.get("dias") is not None and 1 <= r.get("dias") <= 3]),
-            "sin_fecha": len([r for r in pendientes if r.get("dias") is None]),
-        }
+    # =========================
+    # RECREAR URGENTES / RECIENTES YA FILTRADOS
+    # =========================
+    data["urgentes"] = [
+        r for r in rows
+        if r.get("dias") is not None and r.get("dias") <= 3
+        and not is_done(r.get("status", ""))
+    ][:10]
+
+    data["recientes"] = sorted(
+        rows,
+        key=lambda r: r.get("index", 0),
+        reverse=True
+    )[:8]
 
     return jsonify(data)
 
