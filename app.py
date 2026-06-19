@@ -398,23 +398,46 @@ def api_ordenes():
     categoria = request.args.get("categoria", "").strip().upper()
 
     if categoria:
+        # Filtrar por categoría
         data["rows"] = [
             r for r in data["rows"]
             if (r.get("categoria") or "").strip().upper() == categoria
         ]
 
+        # En BRANDING y PROMOCIONAL solo mostrar NO terminadas
+        if categoria in ["BRANDING", "PROMOCIONAL"]:
+            data["rows"] = [
+                r for r in data["rows"]
+                if not is_done(r.get("status", ""))
+            ]
+
         data["urgentes"] = [
             r for r in data.get("urgentes", [])
             if (r.get("categoria") or "").strip().upper() == categoria
+            and not is_done(r.get("status", ""))
         ]
 
         data["recientes"] = [
             r for r in data.get("recientes", [])
             if (r.get("categoria") or "").strip().upper() == categoria
+            and not is_done(r.get("status", ""))
         ]
 
-    return jsonify(data)
+        pendientes = [r for r in data["rows"] if not is_done(r.get("status", ""))]
+        terminadas = [r for r in data["rows"] if is_done(r.get("status", ""))]
 
+        data["kpis"] = {
+            "recibidas": len(data["rows"]),
+            "pendientes": len(pendientes),
+            "en_proceso": len([r for r in data["rows"] if is_process(r.get("status", ""))]),
+            "terminadas": len(terminadas),
+            "vencidas": len([r for r in pendientes if r.get("dias") is not None and r.get("dias") < 0]),
+            "hoy": len([r for r in pendientes if r.get("dias") == 0]),
+            "proximas": len([r for r in pendientes if r.get("dias") is not None and 1 <= r.get("dias") <= 3]),
+            "sin_fecha": len([r for r in pendientes if r.get("dias") is None]),
+        }
+
+    return jsonify(data)
 
 @app.route("/")
 def home():

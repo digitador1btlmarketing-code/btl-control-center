@@ -600,9 +600,12 @@ const showRow = r => {
   if (currentFilter === 'pendientes') return !isDone(r.status);
   if (currentFilter === 'terminada') return key === 'terminada';
   if (currentFilter === 'urgente') return key === 'vencida' || key === 'hoy';
-  if (currentFilter === 'branding') return categoria === 'BRANDING';
-  if (currentFilter === 'promocional') return categoria === 'PROMOCIONAL';
+  if (currentFilter === 'branding')
+  return categoria === 'BRANDING' && !isDone(r.status);
 
+  if (currentFilter === 'promocional')
+  return categoria === 'PROMOCIONAL' && !isDone(r.status);
+  
   return true;
 };
 
